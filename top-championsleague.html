@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top 10 Fútbol</title>
+  <link href="https://fonts.googleapis.com/css2?family=Hammersmith+One&family=Contrail+One&family=Bree+Serif&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      text-align: center; 
+      background-color: #408d95; 
+    }
+    .top10-container { 
+      max-width: 400px; 
+      margin: auto; 
+    }
+    .player-slot { 
+      padding: 10px; 
+      border: 1px solid #000; 
+      margin: 5px; 
+      position: relative; 
+      background-color: #00309a; 
+      color: white; 
+    }
+    .hint { 
+      font-size: 0.8em; 
+      color: gray; 
+    }
+    .botones-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 10px;
+    }
+    /* Tablets (768px a 1024px) */
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .botones-container {
+        position: relative;
+        left: auto;
+        top: auto;
+        transform: none;
+        margin-top: 20px;
+      }
+    }
+    /* Escritorio (desde 1025px en adelante) */
+    @media (min-width: 1025px) {
+      .botones-container {
+        position: absolute;
+        left: 200px;
+        top: 35%;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+    }
+    #btn-nacionalidad, #btn-posicion, #btn-revelar {
+      width: 180px; 
+      height: 50px; 
+      font-size: 18px;
+      font-weight: bold; 
+      border-radius: 8px; 
+      font-family: 'Hammersmith One', sans-serif; 
+      font-size: 16px; 
+      font-weight: normal; 
+    }
+    @media (max-width: 600px) {
+      #btn-nacionalidad, #btn-posicion, #btn-revelar {
+        margin-bottom: 15px;
+      }
+    }
+    h1 {
+      font-family: 'Contrail One', sans-serif;
+      font-size: 48px; 
+      margin-bottom: 5px;
+    }
+    h2 {
+      font-family: 'Bree Serif', serif; 
+      font-size: 20px; 
+      margin-top: 5px;
+    }
+    @media (max-width: 600px) {
+      h2 {
+        font-size: 14px;
+        display: block;
+        text-align: center;
+      }
+    }
+    .player-slot {
+      font-family: 'Contrail One', sans-serif;
+      height: 10px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: left;
+      padding-left: 10px;
+    }
+    #btn-validar {
+      background-color: #FFFFFF; 
+      font-family: 'Hammersmith One', sans-serif; 
+      font-size: 18px; 
+      font-weight: bold;
+      width: 100px; 
+      height: 35px; 
+      border-radius: 8px; 
+      border: 2px solid black; 
+    }
+    #player-input {
+      background-color: #FFFFFF; 
+      font-family: 'Hammersmith One', sans-serif; 
+      font-size: 18px; 
+      width: 200px;
+      height: 25px; 
+      border-radius: 8px;
+      border: 2px solid black;
+      padding: 5px;
+    }
+    .texto-pista {
+      font-family: 'Bree Serif', sans-serif;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 10px;
+      color: rgb(0, 0, 0); 
+    }
+    #message {
+      font-family: 'Hammersmith One', sans-serif;
+      font-size: 18px;
+      color: black;
+      font-weight: bold;
+      text-align: center;
+      margin-top: 10px;
+    }
+    #score {
+      font-family: 'Hammersmith One', sans-serif;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+    #btn-nacionalidad:hover, #btn-posicion:hover, #btn-revelar:hover {
+      filter: brightness(90%);
+      transition: 0.2s ease-in-out;
+    }
+    footer {
+      background-color: #111;
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+    }
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      max-width: 900px;
+      margin: auto;
+    }
+    .footer-section {
+      margin: 10px;
+    }
+    .footer-section h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .footer-section a {
+      display: block;
+      color: #f8b400;
+      text-decoration: none;
+      margin: 5px 0;
+    }
+    .footer-section a:hover {
+      text-decoration: underline;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 600px) {
+      .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      .footer-section {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+    }
+    .main-content {
+      flex: 1;
+      min-height: 130vh;
+    }
+    .flag-icon {
+      margin-right: 10px;
+      vertical-align: middle;
+      width: 30px;
+      height: auto;
+      border: 1px solid black;
+    }
+    .subtitulo {
+      font-family: 'Bree Serif', serif; 
+      font-size: 15px;
+      margin-top: -10px;
+      text-align: center;
+    }
+    .titulo-top10 {
+      display: inline-flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .bandera-titulo {
+      width: 40px;
+      height: auto;
+      border: 2px solid black;
+      border-radius: 10%;
+    }
+  </style>
+</head>
+<body>
+  <div class="main-content">
+    <h1 class="titulo-top10">
+      <span>TOP 10 VTP</span>
+      <img src="imagenes/europa.png" alt="Bandera" class="bandera-titulo">
+    </h1>       
+    <h2>JUGADORES CON MÁS GOLES EN LA HISTORIA - CHAMPIONS LEAGUE</h2>
+  
+    <div class="top10-container" id="top10-list">
+      <div class="player-slot" data-index="0">
+        <span class="slot-number">1.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="1">
+        <span class="slot-number">2.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="2">
+        <span class="slot-number">3.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="3">
+        <span class="slot-number">4.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="4">
+        <span class="slot-number">5.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="5">
+        <span class="slot-number">6.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="6">
+        <span class="slot-number">7.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="7">
+        <span class="slot-number">8.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="8">
+        <span class="slot-number">9.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+      <div class="player-slot" data-index="9">
+        <span class="slot-number">10.&nbsp;</span> 
+        <span class="player-name"></span>
+      </div>
+    </div>       
+      
+    <input type="text" id="player-input" placeholder="Escribe un jugador..." onkeypress="handleKeyPress(event)">
+    <button id="btn-validar" onclick="checkPlayer()">Validar</button>
+    <p id="message"></p>
+  
+    <div class="botones-container">
+      <p class="texto-pista">PULSA PARA DESBLOQUEAR PISTA</p>
+      <button onclick="confirmAction(revealNationality, '¿Seguro que quieres revelar la nacionalidad?')" id="btn-nacionalidad" style="background-color: #009eae;">Nacionalidad</button>
+      <button onclick="confirmAction(revealPosition, '¿Seguro que quieres revelar la posición?')" id="btn-posicion" style="background-color: #009eae;">Posición</button>    
+      <button onclick="confirmAction(revealTop10, '¿Seguro que quieres revelar el top 10?')" id="btn-revelar" style="background-color: #e76667;">Revelar Top 10</button>
+    </div>
+  </div> 
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h3>Redes Sociales</h3>
+        <a href="https://www.tiktok.com/@top10vtp" target="_blank">TikTok</a>
+        <a href="https://www.instagram.com/top10vtp" target="_blank">Instagram</a>
+      </div>
+      <div class="footer-section">
+        <h3>TOP 10 VTP</h3>
+        <a href="top-premierleague.html">Top 10 - Premier League</a>
+        <a href="top-laliga.html">Top 10 - LaLiga</a>
+        <a href="top-seriea.html">Top 10 - Serie A</a>
+        <a href="top-ligue1.html">Top 10 - Ligue 1</a>
+        <a href="top-bundesliga.html">Top 10 - Bundesliga</a>  
+      </div>
+      <div class="footer-section">
+        <h3>Contacto</h3>
+        <p><a href="mailto:top10vtp@gmail.com">top10vtp@gmail.com</a></p>
+        <a href="PoliticaPrivacidad.html">Política de Privacidad</a>
+      </div>
+    </div>
+  </footer>
+  
+  <script>
+    // Variable global para la puntuación
+    let score = 0;
+    let top10;
+    const fechaActual = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD
+  
+    if (fechaActual === "2025-03-03") {
+      // Array para el top del 2 de marzo de 2025
+      top10 = [
+        { name: "Alex Thunder", aliases: ["alex", "thunder"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Delantero" },
+        { name: "Bruno Blaze", aliases: ["bruno", "blaze"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Mediocampista" },
+        { name: "Carlos Swift", aliases: ["carlos", "swift"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Defensa" },
+        { name: "Dani Storm", aliases: ["dani", "storm"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Portero" },
+        { name: "Elias Flash", aliases: ["elias", "flash"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Delantero" },
+        { name: "Fernando Frost", aliases: ["fernando", "frost"], nationality: "<img class='flag-icon' src='imagenes/flag6.png' width='30'>", position: "Mediocampista" },
+        { name: "Gonzalo Gale", aliases: ["gonzalo", "gale"], nationality: "<img class='flag-icon' src='imagenes/flag7.png' width='30'>", position: "Delantero" },
+        { name: "Hugo Heat", aliases: ["hugo", "heat"], nationality: "<img class='flag-icon' src='imagenes/flag8.png' width='30'>", position: "Defensa" },
+        { name: "Iván Ice", aliases: ["ivan", "ice"], nationality: "<img class='flag-icon' src='imagenes/flag9.png' width='30'>", position: "Mediocampista" },
+        { name: "Javier Jet", aliases: ["javier", "jet"], nationality: "<img class='flag-icon' src='imagenes/flag10.png' width='30'>", position: "Portero" }
+      ];
+    } else if (fechaActual === "2025-03-04") {
+      // Array para el top del 3 de marzo de 2025
+      top10 = [
+        { name: "Alex Thunder", aliases: ["alex", "thunder"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Delantero" },
+        { name: "Bruno Blaze", aliases: ["bruno", "blaze"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Mediocampista" },
+        { name: "Carlos Swift", aliases: ["carlos", "swift"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Defensa" },
+        { name: "Dani Storm", aliases: ["dani", "storm"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Portero" },
+        { name: "Elias Flash", aliases: ["elias", "flash"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Delantero" },
+        { name: "Fernando Frost", aliases: ["fernando", "frost"], nationality: "<img class='flag-icon' src='imagenes/flag6.png' width='30'>", position: "Mediocampista" },
+        { name: "Gonzalo Gale", aliases: ["gonzalo", "gale"], nationality: "<img class='flag-icon' src='imagenes/flag7.png' width='30'>", position: "Delantero" },
+        { name: "Hugo Heat", aliases: ["hugo", "heat"], nationality: "<img class='flag-icon' src='imagenes/flag8.png' width='30'>", position: "Defensa" },
+        { name: "Iván Ice", aliases: ["ivan", "ice"], nationality: "<img class='flag-icon' src='imagenes/flag9.png' width='30'>", position: "Mediocampista" },
+        { name: "Javier Jet", aliases: ["javier", "jet"], nationality: "<img class='flag-icon' src='imagenes/flag10.png' width='30'>", position: "Portero" }
+      ];
+    } else {
+      // Array por defecto o el top para el resto de los días
+      top10 = [
+        { name: "Cristiano Ronaldo", aliases: ["cristiano", "ronaldo", "cristiano ronaldo"], nationality: "<img class='flag-icon' src='imagenes/portugal.png' width='30'>", position: "Delantero Centro" },
+        { name: "Lionel Messi", aliases: ["messi", "lionel", "lionel messi"], nationality: "<img class='flag-icon' src='imagenes/argentina.png' width='30'>", position: "Extremo Derecho" },
+        { name: "Robert Lewandowski", aliases: ["lewandowski", "robert lewandowski"], nationality: "<img class='flag-icon' src='imagenes/polonia.png' width='30'>", position: "Delantero Centro" },
+        { name: "Karim Benzema", aliases: ["benzema", "karim benzema"], nationality: "<img class='flag-icon' src='imagenes/francia.png' width='30'>", position: "Delantero Centro" },
+        { name: "Raúl González", aliases: ["raúl", "raúl gonzález"], nationality: "<img class='flag-icon' src='imagenes/españa.png' width='30'>", position: "Delantero Centro" },
+        { name: "Thomas Müller", aliases: ["müller", "thomas müller"], nationality: "<img class='flag-icon' src='imagenes/alemania.png' width='30'>", position: "Mediapunta" },
+        { name: "Ruud van Nistelrooy", aliases: ["van nistelrooy", "ruud van nistelrooy"], nationality: "<img class='flag-icon' src='imagenes/paisesbajos.png' width='30'>", position: "Delantero Centro" },
+        { name: "Kylian Mbappé", aliases: ["mbappé", "kylian mbappé"], nationality: "<img class='flag-icon' src='imagenes/francia.png' width='30'>", position: "Extremo Izquierdo" },
+        { name: "Thierry Henry", aliases: ["henry", "thierry henry"], nationality: "<img class='flag-icon' src='imagenes/francia.png' width='30'>", position: "Delantero Centro" },
+        { name: "Zlatan Ibrahimovic", aliases: ["zlatan", "ibrahimović", "zlatan ibrahimović"], nationality: "<img class='flag-icon' src='imagenes/suecia.png' width='30'>", position: "Delantero Centro" }
+      ];
+    }
+      
+    function normalizeName(name) {
+      return name.trim().toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+    }
+  
+    function handleKeyPress(event) {
+      if (event.key === "Enter") {
+        checkPlayer();
+      }
+    }
+  
+    /* --- PERSISTENCIA DEL PROGRESO --- */
+    document.addEventListener("DOMContentLoaded", function () {
+      const topID = "champions";
+      const fechaActual = new Date().toISOString().split('T')[0];
+      const topKey = `${topID}-${fechaActual}`;
+      let progreso = JSON.parse(localStorage.getItem(topKey)) || {
+        aciertos: [],
+        pistas: { nacionalidad: false, posicion: false },
+        intentosFallidos: [],
+        score: 0,
+        revelado: false
+      };
+  
+      function guardarProgreso() {
+        localStorage.setItem(topKey, JSON.stringify(progreso));
+      }
+  
+      function restaurarProgreso() {
+        // Restaurar jugadores acertados
+        top10.forEach((player, index) => {
+          if (progreso.aciertos.includes(player.name)) {
+            const slot = document.querySelector(`.player-slot[data-index='${index}']`);
+            if (slot) {
+              slot.innerHTML = `<span class="slot-number">${index + 1}.&nbsp;</span> <span class="player-name">${player.name}</span>`;
+              slot.setAttribute("data-guessed", "true");
+              slot.style.backgroundColor = "#3e79fa";
+            }
+          }
+        });
+        // Restaurar pistas usadas
+        if (progreso.pistas.nacionalidad) {
+          document.getElementById("btn-nacionalidad").disabled = true;
+          document.getElementById("btn-posicion").disabled = false;
+          document.querySelectorAll(".player-slot").forEach((slot, index) => {
+            if (!slot.querySelector(".player-name").textContent) {
+              let existingText = slot.innerHTML.trim();
+              if (!existingText.includes(top10[index].nationality)) {
+                slot.innerHTML = existingText + " " + top10[index].nationality;
+              }
+            }
+          });
+        }
+        if (progreso.pistas.posicion) {
+          document.getElementById("btn-posicion").disabled = true;
+          document.querySelectorAll(".player-slot").forEach((slot, index) => {
+            if (!slot.querySelector(".player-name").textContent) {
+              let existingText = slot.innerHTML.trim();
+              if (!existingText.includes(top10[index].position)) {
+                slot.innerHTML = existingText + " / " + top10[index].position;
+              }
+            }
+          });
+        }
+        score = progreso.score;
+  
+        // Si se había revelado el top, forzamos el final del juego
+        if (progreso.revelado) {
+          revealTop10();
+        }
+      }
+  
+      // Comprueba cada minuto si cambió la fecha para resetear el progreso
+      setInterval(() => {
+        const nuevaFecha = new Date().toISOString().split('T')[0];
+        if (nuevaFecha !== fechaActual) {
+          localStorage.removeItem(topKey);
+          location.reload();
+        }
+      }, 60000);
+  
+      window.progreso = progreso;
+      window.guardarProgreso = guardarProgreso;
+  
+      restaurarProgreso();
+    });
+    /* --- FIN PERSISTENCIA --- */
+  
+    function checkPlayer() {
+      const input = document.getElementById("player-input").value;
+      const normalizedInput = normalizeName(input);
+      const message = document.getElementById("message");
+  
+      const player = top10.find(p => p.aliases.some(alias => normalizeName(alias) === normalizedInput));
+      if (player) {
+        const index = top10.indexOf(player);
+        const slot = document.querySelector(`.player-slot[data-index='${index}']`);
+  
+        if (!slot.querySelector(".player-name").textContent) {
+          slot.innerHTML = `<span class="slot-number">${index + 1}.&nbsp;</span> <span class="player-name">${player.name}</span>`;
+          slot.setAttribute("data-guessed", "true");
+          slot.style.backgroundColor = "#3e79fa";
+  
+          let puntos = 5;
+          if (document.getElementById("btn-nacionalidad").disabled) {
+            puntos = 3;
+          }
+          if (document.getElementById("btn-nacionalidad").disabled && document.getElementById("btn-posicion").disabled) {
+            puntos = 1;
+          }
+          score += puntos;
+  
+          window.progreso.aciertos.push(player.name);
+          window.progreso.score = score;
+          window.guardarProgreso();
+        }
+  
+        message.textContent = "¡Correcto!";
+  
+        let jugadoresAdivinados = document.querySelectorAll(".player-slot[data-guessed='true']").length;
+        if (jugadoresAdivinados === 10) {
+          finalizarJuego();
+        }
+      } else {
+        message.textContent = "Este jugador no es correcto";
+        window.progreso.intentosFallidos.push(input);
+        window.guardarProgreso();
+      }
+  
+      document.getElementById("player-input").value = "";
+    }
+  
+    function finalizarJuego() {
+      document.getElementById("btn-nacionalidad").disabled = true;
+      document.getElementById("btn-posicion").disabled = true;
+      document.getElementById("btn-revelar").disabled = true;
+  
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+      overlay.style.display = "flex";
+      overlay.style.justifyContent = "center";
+      overlay.style.alignItems = "center";
+      overlay.style.zIndex = "1000";
+  
+      let mensajeBox = document.createElement("div");
+      mensajeBox.style.backgroundColor = "#fff";
+      mensajeBox.style.padding = "20px";
+      mensajeBox.style.borderRadius = "10px";
+      mensajeBox.style.textAlign = "center";
+      mensajeBox.style.width = "250px";
+      mensajeBox.style.boxShadow = "0px 4px 10px rgba(0,0,0,0.3)";
+      mensajeBox.style.fontFamily = "'Hammersmith One', sans-serif";
+      mensajeBox.style.fontSize = "18px";
+      mensajeBox.style.color = "black";
+      mensajeBox.style.fontWeight = "bold";
+  
+      mensajeBox.innerHTML = `
+        <h2 style="color:#009eae;">¡Enhorabuena!</h2>
+        <p>Has acertado ${document.querySelectorAll(".player-slot[data-guessed='true']").length}/10 jugadores.</p>
+        <p>Puntuación final: ${score}</p>
+        <button id="btn-sistema" style="
+          background-color: #009eae;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 20px;
+          border: 2px solid black;">
+          Puntuación
+        </button>
+        <button id="cerrarMensaje" style="
+          background-color: #009eae;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 20px;
+          margin-left: 10px;
+          border: 2px solid black;">
+          Aceptar
+        </button>
+      `;
+  
+      overlay.appendChild(mensajeBox);
+      document.body.appendChild(overlay);
+  
+      document.getElementById("btn-sistema").addEventListener("click", function() {
+        mostrarSistemaPuntuacion();
+      });
+      document.getElementById("cerrarMensaje").addEventListener("click", function() {
+        document.body.removeChild(overlay);
+      });
+    }
+  
+    function confirmAction(action, message) {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+      overlay.style.display = "flex";
+      overlay.style.justifyContent = "center";
+      overlay.style.alignItems = "center";
+      overlay.style.zIndex = "1000";
+  
+      let confirmBox = document.createElement("div");
+      confirmBox.style.backgroundColor = "#fff";
+      confirmBox.style.color = "black";
+      confirmBox.style.fontFamily = "'Hammersmith One', sans-serif";
+      confirmBox.style.fontSize = "18px";
+      confirmBox.style.padding = "20px";
+      confirmBox.style.borderRadius = "10px";
+      confirmBox.style.textAlign = "center";
+      confirmBox.style.width = "300px";
+  
+      confirmBox.innerHTML = `<p>${message}</p>`;
+  
+      let btnYes = document.createElement("button");
+      btnYes.innerText = "Aceptar";
+      btnYes.style.fontFamily = "'Hammersmith One', sans-serif";
+      btnYes.style.margin = "10px";
+      btnYes.style.padding = "10px";
+      btnYes.style.border = "none";
+      btnYes.style.backgroundColor = "#009eae";
+      btnYes.style.color = "white";
+      btnYes.style.fontSize = "16px";
+      btnYes.style.borderRadius = "5px";
+      btnYes.style.cursor = "pointer";
+      btnYes.style.border = "2px solid black";
+      btnYes.onclick = function() {
+        document.body.removeChild(overlay);
+        action();
+      };
+  
+      let btnNo = document.createElement("button");
+      btnNo.innerText = "Cancelar";
+      btnNo.style.fontFamily = "'Hammersmith One', sans-serif";
+      btnNo.style.margin = "10px";
+      btnNo.style.padding = "10px";
+      btnNo.style.border = "none";
+      btnNo.style.backgroundColor = "#e76667";
+      btnNo.style.color = "white";
+      btnNo.style.fontSize = "16px";
+      btnNo.style.borderRadius = "5px";
+      btnNo.style.cursor = "pointer";
+      btnNo.style.border = "2px solid black";
+      btnNo.onclick = function() {
+        document.body.removeChild(overlay);
+      };
+  
+      confirmBox.appendChild(btnYes);
+      confirmBox.appendChild(btnNo);
+      overlay.appendChild(confirmBox);
+      document.body.appendChild(overlay);
+    }
+  
+    function revealTop10() {
+      // Registrar que el top 10 ya se ha revelado
+      window.progreso.revelado = true;
+      window.guardarProgreso();
+  
+      let acertados = document.querySelectorAll(".player-slot[data-guessed='true']").length;
+  
+      document.querySelectorAll(".player-slot").forEach((slot, index) => {
+        if (!slot.querySelector(".player-name").textContent.trim()) {
+          slot.innerHTML = `<span class="slot-number">${index + 1}.&nbsp;</span> <span class="player-name">${top10[index].name}</span>`;
+        }
+      });
+      disableInputs();
+  
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+      overlay.style.display = "flex";
+      overlay.style.justifyContent = "center";
+      overlay.style.alignItems = "center";
+      overlay.style.zIndex = "1000";
+  
+      let mensajeBox = document.createElement("div");
+      mensajeBox.style.backgroundColor = "#fff";
+      mensajeBox.style.padding = "20px";
+      mensajeBox.style.borderRadius = "10px";
+      mensajeBox.style.textAlign = "center";
+      mensajeBox.style.width = "250px";
+      mensajeBox.style.boxShadow = "0px 4px 10px rgba(0,0,0,0.3)";
+      mensajeBox.style.fontFamily = "'Hammersmith One', sans-serif";
+      mensajeBox.style.fontSize = "18px";
+      mensajeBox.style.color = "black";
+      mensajeBox.style.fontWeight = "bold";
+  
+      mensajeBox.innerHTML = `
+        <h2 style="color:#009eae;">Top 10 Revelado</h2>
+        <p>Has acertado ${document.querySelectorAll(".player-slot[data-guessed='true']").length}/10 jugadores.</p>
+        <p>Puntuación final: ${score}</p>
+        <button id="btn-sistema" style="
+          background-color: #009eae;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 20px;
+          border: 2px solid black;">
+          Puntuación
+        </button>
+        <button id="cerrarMensaje" style="
+          background-color: #009eae;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 20px;
+          margin-left: 10px;
+          border: 2px solid black;">
+          Aceptar
+        </button>
+      `;
+  
+      overlay.appendChild(mensajeBox);
+      document.body.appendChild(overlay);
+  
+      document.getElementById("btn-sistema").addEventListener("click", function() {
+        mostrarSistemaPuntuacion();
+      });
+      document.getElementById("cerrarMensaje").addEventListener("click", function() {
+        document.body.removeChild(overlay);
+      });
+    }
+  
+    function revealPosition() {
+      if (!document.getElementById("btn-nacionalidad").disabled) {
+        showCustomAlert("⚠️ Primero debes desbloquear la pista de Nacionalidad.");
+        return;
+      }
+  
+      document.querySelectorAll(".player-slot").forEach((slot, index) => {
+        if (!slot.querySelector(".player-name").textContent) { 
+          let existingText = slot.innerHTML.trim();
+          if (!existingText.includes(top10[index].position)) {
+            let hasFlag = slot.querySelector(".flag-icon");
+            let separator = hasFlag ? " / " : " ";
+            slot.innerHTML = existingText + separator + top10[index].position;
+          }
+        }
+      });
+  
+      document.getElementById("btn-posicion").disabled = true;
+      window.progreso.pistas.posicion = true;
+      window.guardarProgreso();
+    }
+              
+    function revealNationality() {
+      document.querySelectorAll(".player-slot").forEach((slot, index) => {
+        if (!slot.querySelector(".player-name").textContent) { 
+          let existingText = slot.innerHTML.trim();
+          if (!existingText.includes(top10[index].nationality)) {
+            slot.innerHTML = existingText + (existingText.includes(top10[index].position) ? " / " : " ") + top10[index].nationality;
+          }
+        }
+      });
+  
+      document.getElementById("btn-nacionalidad").disabled = true;
+      document.getElementById("btn-posicion").disabled = false;
+      window.progreso.pistas.nacionalidad = true;
+      window.guardarProgreso();
+    }
+  
+    function disableInputs() {
+      document.getElementById("player-input").disabled = true;
+      document.getElementById("btn-nacionalidad").disabled = true;
+      document.getElementById("btn-posicion").disabled = true;
+      document.getElementById("btn-revelar").disabled = true;
+      document.querySelectorAll(".player-slot").forEach(slot => {
+        slot.dataset.hint = "";
+      });
+    }
+  
+    function mostrarSistemaPuntuacion() {
+      let overlayInfo = document.createElement("div");
+      overlayInfo.style.position = "fixed";
+      overlayInfo.style.top = "0";
+      overlayInfo.style.left = "0";
+      overlayInfo.style.width = "100%";
+      overlayInfo.style.height = "100%";
+      overlayInfo.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+      overlayInfo.style.display = "flex";
+      overlayInfo.style.justifyContent = "center";
+      overlayInfo.style.alignItems = "center";
+      overlayInfo.style.zIndex = "1100";
+  
+      let infoBox = document.createElement("div");
+      infoBox.style.backgroundColor = "#fff";
+      infoBox.style.padding = "20px";
+      infoBox.style.borderRadius = "10px";
+      infoBox.style.textAlign = "center";
+      infoBox.style.width = "250px";
+      infoBox.style.boxShadow = "0px 4px 10px rgba(0,0,0,0.3)";
+      infoBox.style.fontFamily = "'Hammersmith One', sans-serif";
+      infoBox.style.fontSize = "16px";
+      infoBox.style.color = "black";
+      infoBox.style.fontWeight = "bold";
+  
+      infoBox.innerHTML = `
+        <h2 style="color:#009eae;">Puntuación por jugador</h2>
+        <p>Sin pistas: <strong>5 puntos</strong>.</p>
+        <p>Pista nacionalidad: <strong>3 puntos</strong>.</p>
+        <p>Ambas pistas: <strong>1 punto</strong>.</p>
+        <button id="cerrarInfo" style="
+          background-color: #009eae;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          font-size: 16px;
+          border-radius: 5px;
+          cursor: pointer;
+          margin-top: 20px;
+          border: 2px solid black;">
+          Aceptar
+        </button>
+      `;
+  
+      overlayInfo.appendChild(infoBox);
+      document.body.appendChild(overlayInfo);
+  
+      document.getElementById("cerrarInfo").addEventListener("click", function() {
+        document.body.removeChild(overlayInfo);
+      });
+    }
+  
+    function showCustomAlert(message) {
+      let overlay = document.createElement("div");
+      overlay.style.position = "fixed";
+      overlay.style.top = "0";
+      overlay.style.left = "0";
+      overlay.style.width = "100%";
+      overlay.style.height = "100%";
+      overlay.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+      overlay.style.display = "flex";
+      overlay.style.justifyContent = "center";
+      overlay.style.alignItems = "center";
+      overlay.style.zIndex = "1000";
+  
+      let alertBox = document.createElement("div");
+      alertBox.style.backgroundColor = "#fff";
+      alertBox.style.padding = "20px";
+      alertBox.style.borderRadius = "10px";
+      alertBox.style.textAlign = "center";
+      alertBox.style.width = "300px";
+      alertBox.style.boxShadow = "0px 4px 10px rgba(0,0,0,0.3)";
+      alertBox.style.fontFamily = "'Hammersmith One', sans-serif";
+      alertBox.style.fontSize = "18px";
+      alertBox.style.color = "black";
+      alertBox.style.fontWeight = "bold";
+  
+      alertBox.innerHTML = `<p>${message}</p>`;
+  
+      let closeButton = document.createElement("button");
+      closeButton.innerText = "Aceptar";
+      closeButton.style.marginTop = "10px";
+      closeButton.style.padding = "10px 15px";
+      closeButton.style.border = "2px solid black"; 
+      closeButton.style.backgroundColor = "#009eae";
+      closeButton.style.color = "white";
+      closeButton.style.fontSize = "16px";
+      closeButton.style.borderRadius = "5px";
+      closeButton.style.cursor = "pointer";
+      closeButton.style.fontFamily = "'Hammersmith One', sans-serif";
+      closeButton.onclick = function() {
+        document.body.removeChild(overlay);
+      };
+  
+      alertBox.appendChild(closeButton);
+      overlay.appendChild(alertBox);
+      document.body.appendChild(overlay);
+    }
+  </script>
+</body>
+</html>
