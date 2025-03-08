@@ -364,7 +364,7 @@
   
     /* --- PERSISTENCIA DEL PROGRESO --- */
     document.addEventListener("DOMContentLoaded", function () {
-      const topID = "champions";
+      const topID = "seriea";
       const fechaActual = new Date().toISOString().split('T')[0];
       const topKey = `${topID}-${fechaActual}`;
       let progreso = JSON.parse(localStorage.getItem(topKey)) || {
