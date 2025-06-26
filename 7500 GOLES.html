@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minijuego de Goles</title>
+  <link href="https://fonts.googleapis.com/css2?family=Contrail+One&family=Hammersmith+One&family=Bree+Serif&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #408D95;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: white;
+      width: 100%;
+      border-bottom: 3px solid black;
+    }
+    .title-box {
+      grid-column: 2;
+      background-color: white;
+      color: black;
+      padding: 8px 20px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      font-family: 'Contrail One', sans-serif;
+      border: 3px solid black;
+      justify-self: center;
+    }
+    .logo {
+      grid-column: 3;
+      width: 50px;
+      height: auto;
+      justify-self: end;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: 1fr;
+      grid-gap: 5px;
+      width: 450px;
+      margin-top: 10px;
+    }
+    .cell {
+      background-color: #545454;
+      color: white;
+      border: 2px solid black;
+      border-radius: 10px;
+      padding: 6px 8px;
+      min-height: 34px;
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      overflow-wrap: anywhere;
+      cursor: pointer;
+      font-family: 'Bree Serif', serif;
+      font-size: 11px;
+    }
+    .cell.used {
+      background-color: #333;
+      cursor: default;
+    }
+    .label {
+      flex-grow: 1;
+    }
+    .flag {
+      width: 28px;
+      height: 18px;
+      margin-right: 4px;
+      border: 1px solid black;
+    }
+    .flag.no-border {
+      border: none;
+    }
+    .flag.sudamerica {
+      width: 34px;
+      height: 22px;
+    }
+    .result {
+      margin-left: 8px;
+      white-space: nowrap;
+    }
+    #current-player {
+      visibility: hidden;
+      margin-top: 20px;
+      background-color: white;
+      padding: 10px;
+      border-radius: 10px;
+      border: 3px solid black;
+      font-weight: bold;
+      font-family: 'Hammersmith One', sans-serif;
+      min-height: 20px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 5px 20px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 2px solid black;
+      cursor: pointer;
+      font-family: 'Hammersmith One', sans-serif;
+    }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 1000;
+      color: white;
+      text-align: center;
+    }
+    .end-box {
+      background: white;
+      border: 3px solid black;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 300px;
+      color: black;
+      font-family: 'Hammersmith One', sans-serif;
+    }
+    .start-box {
+      background: white;
+      border: 3px solid black;
+      border-radius: 10px;
+      padding: 20px;
+      max-width: 300px;
+      color: black;
+      font-family: 'Hammersmith One', sans-serif;
+    }
+    .total-box {
+      color: white;
+      background: red;
+      padding: 8px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    #end-note {
+      color: black;
+    }
+    #league-animation img {
+      width: 80px;
+      height: auto;
+      border: 1px solid black;
+    }
+    #league-display {
+      margin-top: 10px;
+      font-weight: bold;
+      font-family: 'Hammersmith One', sans-serif;
+      color: white;
+    }
+    #start-btn {
+      background: #ddd;
+      border: 2px solid black;
+      padding: 5px 20px;
+      cursor: pointer;
+      font-family: 'Hammersmith One', sans-serif;
+    }
+    footer {
+      background-color: #111;
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+      width: 100%;
+      margin-top: 400px;
+    }
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      max-width: 900px;
+      margin: auto;
+    }
+    .footer-section {
+      margin: 10px;
+    }
+    .footer-section h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .footer-section a {
+      display: block;
+      color: #f8b400;
+      text-decoration: none;
+      margin: 5px 0;
+    }
+    .footer-section a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      .header {
+        width: 100%;
+      }
+      .footer-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      .footer-column {
+        width: 100vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title-box">RETO 7500 GOLES</div>
+    <img src="imagenes/logovtp.png" alt="Logo" class="logo">
+  </div>
+
+  <div id="start-overlay" class="overlay">
+    <div class="start-box">
+      <p>Supera los 7500 goles colocando a los futbolistas en cada casilla.</p>
+      <button id="start-btn">Comenzar</button>
+    </div>
+  </div>
+  <div id="league-animation" class="overlay" style="display:none">
+    <p>Seleccionando multiplicador...</p>
+    <img id="anim-flag" src="imagenes/españa.png" alt="Flag">
+  </div>
+  <div id="league-display"></div>
+
+  <button id="draw-btn" disabled>Sacar jugador</button>
+  <div id="current-player"></div>
+  <div class="board" id="board"></div>
+  <div id="end-overlay" class="overlay" style="display:none">
+    <div class="end-box">
+      <div id="total-box" class="total-box"></div>
+      <p id="end-note"></p>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h2>Redes Sociales</h2>
+        <a href="https://www.tiktok.com/@top10vtp" target="_blank">TikTok</a>
+        <a href="https://www.instagram.com/top10vtp" target="_blank">Instagram</a>
+      </div>
+      <div class="footer-section">
+        <h2>TOP 10 VTP</h2>
+        <a href="top-premierleague.html">Top 10 - Premier League</a>
+        <a href="top-laliga.html">Top 10 - LaLiga</a>
+        <a href="top-seriea.html">Top 10 - Serie A</a>
+        <a href="top-ligue1.html">Top 10 - Ligue 1</a>
+        <a href="top-bundesliga.html">Top 10 - Bundesliga</a>
+        <a href="top-championsleague.html">Top 10 - Champions League</a>
+      </div>
+      <div class="footer-section">
+        <h2>Contacto</h2>
+        <p>
+          <a href="mailto:top10vtp@gmail.com">top10vtp@gmail.com</a>
+        </p>
+        <a href="PoliticaPrivacidad.html">Política de Privacidad</a>
+      </div>
+    </div>
+  </footer>
+
+<script>
+const categories = [
+  { name: 'Goles en Champions \u00D75', key: 'champions', multiplier: 5 },
+  { name: 'Goles en Premier League', key: 'premier', multiplier: 1 },
+  { name: 'Goles en Bundesliga', key: 'bundesliga', multiplier: 1 },
+  { name: 'Goles en Liga Espa\u00F1ola', key: 'laliga', multiplier: 1 },
+  { name: 'Goles en Liga Italiana', key: 'seriea', multiplier: 1 },
+  { name: 'Goles en Liga Francesa', key: 'ligue1', multiplier: 1 },
+  { name: 'Goles en Eredivisie', key: 'eredivisie', multiplier: 1 },
+  { name: 'Goles en Sudam\u00E9rica \u00D73', key: 'sudamerica', multiplier: 3 },
+  { name: 'Goles con su selecci\u00F3n \u00D74', key: 'seleccion', multiplier: 4 },
+  { name: 'Goles de falta \u00D710', key: 'freekick', multiplier: 10 },
+  { name: 'Goles en toda su carrera', key: 'career', multiplier: 1 },
+  { name: 'Goles en toda su carrera \u00D72', key: 'career', multiplier: 2 },
+  { name: 'Goles en Mundiales \u00D740', key: 'worldcup', multiplier: 40 },
+  { name: 'Goles en Mundiales \u00D780', key: 'worldcup', multiplier: 80 },
+  { name: 'Goles en final de Champions \u00D7250', key: 'championsFinal', multiplier: 250 },
+  { name: 'Goles en final de Mundial \u00D7600', key: 'worldcupFinal', multiplier: 600 }
+];
+
+const leagueLabels = {
+  premier: 'Premier League',
+  bundesliga: 'Bundesliga',
+  laliga: 'Liga Espa\u00F1ola',
+  seriea: 'Liga Italiana',
+  ligue1: 'Liga Francesa',
+  eredivisie: 'Eredivisie'
+};
+
+const categoryFlags = {
+  champions: 'imagenes/europa.png',
+  premier: 'imagenes/inglaterra.png',
+  bundesliga: 'imagenes/alemania.png',
+  laliga: 'imagenes/espa\u00F1a.png',
+  seriea: 'imagenes/italia.png',
+  ligue1: 'imagenes/francia.png',
+  eredivisie: 'imagenes/paisesbajos.png',
+  sudamerica: 'imagenes/sudamerica.png',
+  seleccion: 'imagenes/seleccion.png',
+  freekick: 'imagenes/golesfalta.png',
+  career: 'imagenes/carrera.jpg',
+  worldcup: 'imagenes/mundial.png',
+  championsFinal: 'imagenes/championsleague.png',
+  worldcupFinal: 'imagenes/finalmundial.png'
+};
+
+const noBorderFlags = new Set([
+  'sudamerica',
+  'seleccion',
+  'freekick',
+  'career',
+  'worldcup',
+  'championsFinal',
+  'worldcupFinal'
+]);
+
+const leagueKeys = Object.keys(leagueLabels);
+let chosenLeague = null;
+
+function applyLeagueMultiplier(key) {
+  if (chosenLeague) return;
+  chosenLeague = key;
+  const leagueCategory = categories.find(c => c.key === chosenLeague);
+  leagueCategory.multiplier = 3;
+  leagueCategory.name += ' \u00D73';
+  document.getElementById('league-display').textContent = leagueLabels[chosenLeague] + ' x3';
+  updateBoardText();
+}
+
+function startGame() {
+  document.getElementById('start-overlay').style.display = 'none';
+  animateLeagueSelection();
+}
+
+function animateLeagueSelection() {
+  const anim = document.getElementById('league-animation');
+  const img = document.getElementById('anim-flag');
+  anim.style.display = 'flex';
+  let i = 0;
+  const cycle = setInterval(() => {
+    const key = leagueKeys[i % leagueKeys.length];
+    img.src = categoryFlags[key];
+    i++;
+  }, 100);
+  setTimeout(() => {
+    clearInterval(cycle);
+    const chosen = leagueKeys[Math.floor(Math.random() * leagueKeys.length)];
+    img.src = categoryFlags[chosen];
+    applyLeagueMultiplier(chosen);
+    setTimeout(() => {
+      anim.style.display = 'none';
+      document.getElementById('draw-btn').disabled = false;
+      gameStarted = true;
+    }, 1000);
+  }, 3000);
+}
+
+const players = [
+  {name:'Sergio Agüero', stats:{champions:41,premier:184,bundesliga:0,laliga:75,seriea:0,ligue1:0,eredivisie:0,sudamerica:23,seleccion:41,freekick:4,career:426,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'David Alaba', stats:{champions:6,premier:0,bundesliga:24,laliga:3,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:15,freekick:17,career:55,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Alexis Sánchez', stats:{champions:17,premier:63,bundesliga:0,laliga:38,seriea:38,ligue1:14,eredivisie:0,sudamerica:14,seleccion:51,freekick:12,career:259,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Carlos Bacca', stats:{champions:0,premier:0,bundesliga:0,laliga:62,seriea:31,ligue1:0,eredivisie:0,sudamerica:167,seleccion:16,freekick:0,career:294,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Roberto Baggio', stats:{champions:4,premier:0,bundesliga:0,laliga:0,seriea:205,ligue1:0,eredivisie:0,sudamerica:0,seleccion:27,freekick:33,career:304,worldcup:9,championsFinal:0,worldcupFinal:0}},
+{name:'Gareth Bale', stats:{champions:20,premier:53,bundesliga:0,laliga:81,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:40,freekick:17,career:226,worldcup:1,championsFinal:3,worldcupFinal:0}},
+{name:'Michael Ballack', stats:{champions:16,premier:17,bundesliga:77,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:42,freekick:9,career:185,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Mario Balotelli', stats:{champions:8,premier:21,bundesliga:0,laliga:0,seriea:52,ligue1:41,eredivisie:0,sudamerica:0,seleccion:14,freekick:13,career:203,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Franco Baresi', stats:{champions:0,premier:0,bundesliga:0,laliga:0,seriea:12,ligue1:0,eredivisie:0,sudamerica:0,seleccion:1,freekick:0,career:32,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Gabriel Batistuta', stats:{champions:6,premier:0,bundesliga:0,laliga:0,seriea:183,ligue1:0,eredivisie:0,sudamerica:7,seleccion:56,freekick:16,career:302,worldcup:10,championsFinal:0,worldcupFinal:0}},
+{name:'Franz Beckenbauer', stats:{champions:4,premier:0,bundesliga:44,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:14,freekick:4,career:69,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'David Beckham', stats:{champions:16,premier:62,bundesliga:0,laliga:13,seriea:2,ligue1:0,eredivisie:0,sudamerica:0,seleccion:17,freekick:65,career:143,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Jude Bellingham', stats:{champions:13,premier:0,bundesliga:12,laliga:28,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:6,freekick:0,career:71,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Karim Benzema', stats:{champions:90,premier:0,bundesliga:0,laliga:238,seriea:0,ligue1:43,eredivisie:0,sudamerica:0,seleccion:37,freekick:3,career:498,worldcup:3,championsFinal:1,worldcupFinal:0}},
+{name:'Dennis Bergkamp', stats:{champions:7,premier:87,bundesliga:0,laliga:0,seriea:11,ligue1:0,eredivisie:103,sudamerica:0,seleccion:37,freekick:5,career:290,worldcup:6,championsFinal:0,worldcupFinal:0}},
+{name:'Laurent Blanc', stats:{champions:3,premier:1,bundesliga:0,laliga:1,seriea:12,ligue1:81,eredivisie:0,sudamerica:0,seleccion:16,freekick:1,career:119,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Jérôme Boateng', stats:{champions:4,premier:0,bundesliga:5,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:1,freekick:0,career:13,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Bobby Charlton', stats:{champions:10,premier:198,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:49,freekick:0,career:276,worldcup:4,championsFinal:2,worldcupFinal:0}},
+{name:'Bobby Moore', stats:{champions:0,premier:23,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:2,freekick:0,career:25,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Leonardo Bonucci', stats:{champions:3,premier:0,bundesliga:1,laliga:0,seriea:32,ligue1:0,eredivisie:0,sudamerica:0,seleccion:8,freekick:0,career:55,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Sergio Busquets', stats:{champions:4,premier:0,bundesliga:0,laliga:11,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:2,freekick:0,career:21,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Cafu', stats:{champions:2,premier:0,bundesliga:0,laliga:0,seriea:9,ligue1:0,eredivisie:0,sudamerica:4,seleccion:5,freekick:0,career:21,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Fabio Cannavaro', stats:{champions:2,premier:0,bundesliga:0,laliga:0,seriea:14,ligue1:0,eredivisie:0,sudamerica:0,seleccion:2,freekick:0,career:20,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Yannick Carrasco', stats:{champions:6,premier:0,bundesliga:0,laliga:37,seriea:0,ligue1:9,eredivisie:0,sudamerica:0,seleccion:11,freekick:4,career:115,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Dani Carvajal', stats:{champions:2,premier:0,bundesliga:1,laliga:10,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:1,freekick:0,career:16,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Casemiro', stats:{champions:9,premier:6,bundesliga:0,laliga:24,seriea:0,ligue1:0,eredivisie:0,sudamerica:11,seleccion:7,freekick:0,career:70,worldcup:1,championsFinal:1,worldcupFinal:0}},
+{name:'Edinson Cavani', stats:{champions:35,premier:12,bundesliga:0,laliga:5,seriea:112,ligue1:138,eredivisie:0,sudamerica:26,seleccion:58,freekick:1,career:451,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'Chicharito', stats:{champions:14,premier:53,bundesliga:28,laliga:8,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:52,freekick:0,career:246,worldcup:4,championsFinal:0,worldcupFinal:0}},
+{name:'Giorgio Chiellini', stats:{champions:2,premier:0,bundesliga:0,laliga:0,seriea:27,ligue1:0,eredivisie:0,sudamerica:0,seleccion:8,freekick:0,career:52,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Federico Chiesa', stats:{champions:6,premier:0,bundesliga:0,laliga:0,seriea:47,ligue1:0,eredivisie:0,sudamerica:0,seleccion:7,freekick:0,career:77,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Ashley Cole', stats:{champions:1,premier:15,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:0,freekick:0,career:21,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Iván Córdoba', stats:{champions:1,premier:0,bundesliga:0,laliga:0,seriea:15,ligue1:0,eredivisie:0,sudamerica:4,seleccion:5,freekick:0,career:23,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Hernán Crespo', stats:{champions:25,premier:20,bundesliga:0,laliga:0,seriea:153,ligue1:0,eredivisie:0,sudamerica:13,seleccion:35,freekick:0,career:284,worldcup:4,championsFinal:2,worldcupFinal:0}},
+{name:'Cristiano Ronaldo', stats:{champions:140,premier:103,bundesliga:0,laliga:311,seriea:81,ligue1:0,eredivisie:0,sudamerica:0,seleccion:139,freekick:63,career:939,worldcup:8,championsFinal:4,worldcupFinal:0}},
+{name:'Peter Crouch', stats:{champions:13,premier:106,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:22,freekick:0,career:222,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Johan Cruyff', stats:{champions:19,premier:0,bundesliga:0,laliga:47,seriea:0,ligue1:0,eredivisie:215,sudamerica:0,seleccion:33,freekick:60,career:340,worldcup:3,championsFinal:2,worldcupFinal:0}},
+{name:'Cuadrado', stats:{champions:4,premier:0,bundesliga:0,laliga:0,seriea:43,ligue1:0,eredivisie:0,sudamerica:0,seleccion:11,freekick:0,career:66,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Dani Alves', stats:{champions:12,premier:0,bundesliga:0,laliga:26,seriea:2,ligue1:2,eredivisie:0,sudamerica:12,seleccion:8,freekick:10,career:72,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'David Luiz', stats:{champions:7,premier:14,bundesliga:0,laliga:0,seriea:0,ligue1:3,eredivisie:0,sudamerica:4,seleccion:3,freekick:8,career:43,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'David Silva', stats:{champions:10,premier:60,bundesliga:0,laliga:31,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:35,freekick:5,career:158,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Kevin De Bruyne', stats:{champions:16,premier:72,bundesliga:23,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:31,freekick:15,career:186,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Matthijs de Ligt', stats:{champions:2,premier:2,bundesliga:5,laliga:0,seriea:8,ligue1:0,eredivisie:8,sudamerica:0,seleccion:2,freekick:0,career:30,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Deco', stats:{champions:13,premier:5,bundesliga:0,laliga:11,seriea:0,ligue1:0,eredivisie:0,sudamerica:7,seleccion:5,freekick:17,career:88,worldcup:1,championsFinal:1,worldcupFinal:0}},
+{name:'Alessandro Del Piero  ', stats:{champions:42,premier:0,bundesliga:0,laliga:0,seriea:188,ligue1:0,eredivisie:0,sudamerica:0,seleccion:26,freekick:53,career:342,worldcup:2,championsFinal:1,worldcupFinal:0}},
+{name:'Ousmane Dembélé', stats:{champions:20,premier:0,bundesliga:6,laliga:24,seriea:0,ligue1:36,eredivisie:0,sudamerica:0,seleccion:7,freekick:0,career:108,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Clint Dempsey', stats:{champions:0,premier:57,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:57,freekick:7,career:212,worldcup:4,championsFinal:0,worldcupFinal:0}},
+{name:'Marcel Desailly', stats:{champions:3,premier:6,bundesliga:0,laliga:0,seriea:5,ligue1:7,eredivisie:0,sudamerica:0,seleccion:3,freekick:0,career:25,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Ángel Di María', stats:{champions:24,premier:3,bundesliga:0,laliga:22,seriea:4,ligue1:57,eredivisie:0,sudamerica:6,seleccion:31,freekick:12,career:225,worldcup:3,championsFinal:0,worldcupFinal:1}},
+{name:'Landon Donovan', stats:{champions:0,premier:2,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:57,freekick:1,career:230,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'Didier Drogba', stats:{champions:44,premier:104,bundesliga:0,laliga:0,seriea:0,ligue1:39,eredivisie:0,sudamerica:0,seleccion:66,freekick:23,career:370,worldcup:2,championsFinal:1,worldcupFinal:0}},
+{name:'Edin Džeko', stats:{champions:29,premier:50,bundesliga:66,laliga:0,seriea:107,ligue1:0,eredivisie:0,sudamerica:0,seleccion:68,freekick:0,career:437,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Eden Hazard', stats:{champions:10,premier:85,bundesliga:0,laliga:4,seriea:0,ligue1:36,eredivisie:0,sudamerica:0,seleccion:33,freekick:8,career:200,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Edgar Davids', stats:{champions:3,premier:1,bundesliga:0,laliga:0,seriea:8,ligue1:0,eredivisie:21,sudamerica:0,seleccion:6,freekick:0,career:49,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Michael Essien', stats:{champions:11,premier:17,bundesliga:0,laliga:2,seriea:0,ligue1:18,eredivisie:0,sudamerica:0,seleccion:9,freekick:0,career:67,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Samuel Etoo', stats:{champions:30,premier:12,bundesliga:0,laliga:162,seriea:35,ligue1:0,eredivisie:0,sudamerica:0,seleccion:58,freekick:0,career:428,worldcup:3,championsFinal:2,worldcupFinal:0}},
+{name:'Eusebio', stats:{champions:46,premier:0,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:41,freekick:0,career:622,worldcup:9,championsFinal:3,worldcupFinal:0}},
+{name:'Radamel Falcao', stats:{champions:12,premier:5,bundesliga:0,laliga:61,seriea:0,ligue1:65,eredivisie:0,sudamerica:55,seleccion:36,freekick:0,career:352,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Rio Ferdinand', stats:{champions:2,premier:11,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:3,freekick:0,career:16,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Luís Figo', stats:{champions:24,premier:0,bundesliga:0,laliga:68,seriea:9,ligue1:0,eredivisie:0,sudamerica:0,seleccion:32,freekick:0,career:166,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Phil Foden', stats:{champions:18,premier:61,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:4,freekick:0,career:102,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Diego Forlán', stats:{champions:6,premier:10,bundesliga:0,laliga:128,seriea:2,ligue1:0,eredivisie:0,sudamerica:59,seleccion:36,freekick:0,career:299,worldcup:6,championsFinal:0,worldcupFinal:0}},
+{name:'Garrincha', stats:{champions:0,premier:0,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:244,seleccion:12,freekick:0,career:256,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'Gennaro Gattuso', stats:{champions:1,premier:0,bundesliga:0,laliga:0,seriea:9,ligue1:0,eredivisie:0,sudamerica:0,seleccion:0,freekick:0,career:18,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Gerd Müller', stats:{champions:0,premier:0,bundesliga:365,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:68,freekick:0,career:735,worldcup:14,championsFinal:3,worldcupFinal:1}},
+{name:'Steven Gerrard', stats:{champions:21,premier:121,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:21,freekick:0,career:212,worldcup:3,championsFinal:1,worldcupFinal:0}},
+{name:'Olivier Giroud', stats:{champions:24,premier:90,bundesliga:0,laliga:0,seriea:39,ligue1:33,eredivisie:0,sudamerica:0,seleccion:57,freekick:0,career:332,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'Diego Godín', stats:{champions:4,premier:0,bundesliga:0,laliga:21,seriea:2,ligue1:0,eredivisie:0,sudamerica:4,seleccion:8,freekick:0,career:46,worldcup:1,championsFinal:1,worldcupFinal:0}},
+{name:'Antoine Griezmann', stats:{champions:42,premier:0,bundesliga:0,laliga:198,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:44,freekick:0,career:326,worldcup:4,championsFinal:0,worldcupFinal:1}},
+{name:'Raphaël Guerreiro', stats:{champions:10,premier:0,bundesliga:37,laliga:0,seriea:0,ligue1:10,eredivisie:0,sudamerica:0,seleccion:4,freekick:0,career:63,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Ruud Gullit', stats:{champions:5,premier:4,bundesliga:0,laliga:0,seriea:62,ligue1:0,eredivisie:94,sudamerica:0,seleccion:16,freekick:0,career:200,worldcup:1,championsFinal:2,worldcupFinal:0}},
+{name:'İlkay Gündoğan', stats:{champions:13,premier:45,bundesliga:16,laliga:5,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:19,freekick:0,career:110,worldcup:1,championsFinal:1,worldcupFinal:0}},
+{name:'Erling Haaland', stats:{champions:49,premier:85,bundesliga:62,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:42,freekick:0,career:298,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Gheorghe Hagi', stats:{champions:15,premier:0,bundesliga:0,laliga:23,seriea:5,ligue1:0,eredivisie:0,sudamerica:0,seleccion:35,freekick:0,career:167,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Kai Havertz', stats:{champions:11,premier:41,bundesliga:36,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:20,freekick:0,career:127,worldcup:2,championsFinal:1,worldcupFinal:0}},
+{name:'Thierry Henry', stats:{champions:50,premier:175,bundesliga:0,laliga:35,seriea:3,ligue1:20,eredivisie:0,sudamerica:0,seleccion:51,freekick:0,career:412,worldcup:6,championsFinal:0,worldcupFinal:0}},
+{name:'Fernando Hierro', stats:{champions:8,premier:1,bundesliga:0,laliga:105,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:29,freekick:0,career:161,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'Hugo Sánchez', stats:{champions:17,premier:0,bundesliga:0,laliga:234,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:29,freekick:0,career:516,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Mats Hummels', stats:{champions:5,premier:0,bundesliga:33,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:5,freekick:0,career:52,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Zlatan Ibrahimović', stats:{champions:48,premier:17,bundesliga:0,laliga:16,seriea:156,ligue1:113,eredivisie:35,sudamerica:0,seleccion:62,freekick:0,career:573,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Andrés Iniesta', stats:{champions:11,premier:0,bundesliga:0,laliga:35,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:14,freekick:0,career:102,worldcup:2,championsFinal:0,worldcupFinal:1}},
+{name:'Filippo Inzaghi', stats:{champions:46,premier:0,bundesliga:0,laliga:0,seriea:156,ligue1:0,eredivisie:0,sudamerica:0,seleccion:24,freekick:0,career:299,worldcup:1,championsFinal:2,worldcupFinal:0}},
+{name:'James Rodríguez', stats:{champions:5,premier:6,bundesliga:14,laliga:29,seriea:0,ligue1:9,eredivisie:0,sudamerica:12,seleccion:29,freekick:0,career:154,worldcup:6,championsFinal:0,worldcupFinal:0}},
+{name:'Jesús Navas', stats:{champions:2,premier:4,bundesliga:0,laliga:27,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:5,freekick:0,career:52,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Jordi Alba', stats:{champions:3,premier:0,bundesliga:0,laliga:22,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:10,freekick:0,career:55,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Ricardo Kaká', stats:{champions:30,premier:0,bundesliga:0,laliga:23,seriea:77,ligue1:0,eredivisie:0,sudamerica:26,seleccion:29,freekick:0,career:213,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Harry Kane', stats:{champions:40,premier:213,bundesliga:62,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:73,freekick:0,career:451,worldcup:8,championsFinal:0,worldcupFinal:0}},
+{name:'Kanté', stats:{champions:0,premier:0,bundesliga:0,laliga:12,seriea:0,ligue1:2,eredivisie:0,sudamerica:0,seleccion:2,freekick:0,career:34,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Robbie Keane', stats:{champions:2,premier:126,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:68,freekick:0,career:391,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Joshua Kimmich', stats:{champions:12,premier:0,bundesliga:29,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:8,freekick:0,career:56,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Jürgen Klinsmann', stats:{champions:4,premier:29,bundesliga:110,laliga:0,seriea:36,ligue1:29,eredivisie:0,sudamerica:0,seleccion:41,freekick:0,career:328,worldcup:11,championsFinal:0,worldcupFinal:0}},
+{name:'Miroslav Klose', stats:{champions:14,premier:0,bundesliga:121,laliga:0,seriea:54,ligue1:0,eredivisie:0,sudamerica:0,seleccion:71,freekick:0,career:303,worldcup:16,championsFinal:0,worldcupFinal:0}},
+{name:'Patrick Kluivert', stats:{champions:29,premier:6,bundesliga:0,laliga:91,seriea:6,ligue1:4,eredivisie:42,sudamerica:0,seleccion:40,freekick:0,career:244,worldcup:2,championsFinal:1,worldcupFinal:0}},
+{name:'Toni Kroos', stats:{champions:11,premier:0,bundesliga:23,laliga:22,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:17,freekick:0,career:79,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Philipp Lahm', stats:{champions:0,premier:0,bundesliga:14,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:5,freekick:0,career:24,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Lamine Yamal', stats:{champions:5,premier:0,bundesliga:0,laliga:14,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:6,freekick:0,career:31,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Frank Lampard', stats:{champions:23,premier:177,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:29,freekick:0,career:299,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Michael Laudrup', stats:{champions:10,premier:0,bundesliga:0,laliga:51,seriea:25,ligue1:0,eredivisie:11,sudamerica:0,seleccion:37,freekick:0,career:167,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Lautaro Martínez', stats:{champions:21,premier:0,bundesliga:0,laliga:0,seriea:115,ligue1:0,eredivisie:0,sudamerica:27,seleccion:32,freekick:0,career:211,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Robert Lewandowski', stats:{champions:105,premier:0,bundesliga:312,laliga:69,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:85,freekick:0,career:694,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Hirving Lozano', stats:{champions:4,premier:0,bundesliga:0,laliga:0,seriea:23,ligue1:0,eredivisie:44,sudamerica:0,seleccion:18,freekick:0,career:147,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Lucio', stats:{champions:6,premier:0,bundesliga:22,laliga:0,seriea:3,ligue1:0,eredivisie:0,sudamerica:4,seleccion:4,freekick:0,career:46,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Luis Díaz', stats:{champions:10,premier:29,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:23,seleccion:19,freekick:0,career:124,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Romelu Lukaku', stats:{champions:18,premier:121,bundesliga:0,laliga:0,seriea:84,ligue1:0,eredivisie:0,sudamerica:0,seleccion:89,freekick:0,career:403,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'Paolo Maldini', stats:{champions:3,premier:0,bundesliga:0,laliga:0,seriea:29,ligue1:0,eredivisie:0,sudamerica:0,seleccion:7,freekick:0,career:40,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Mario Mandžukić', stats:{champions:21,premier:0,bundesliga:53,laliga:12,seriea:31,ligue1:0,eredivisie:0,sudamerica:0,seleccion:33,freekick:0,career:226,worldcup:5,championsFinal:2,worldcupFinal:1}},
+{name:'Sadio Mané', stats:{champions:27,premier:111,bundesliga:7,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:46,freekick:0,career:288,worldcup:1,championsFinal:1,worldcupFinal:0}},
+{name:'Diego Maradona', stats:{champions:2,premier:0,bundesliga:0,laliga:27,seriea:81,ligue1:0,eredivisie:0,sudamerica:151,seleccion:32,freekick:0,career:342,worldcup:8,championsFinal:0,worldcupFinal:0}},
+{name:'Marcelo', stats:{champions:9,premier:0,bundesliga:0,laliga:26,seriea:0,ligue1:0,eredivisie:0,sudamerica:9,seleccion:6,freekick:0,career:56,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Marquinhos', stats:{champions:9,premier:0,bundesliga:0,laliga:0,seriea:0,ligue1:26,eredivisie:0,sudamerica:0,seleccion:7,freekick:0,career:48,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Javier Mascherano', stats:{champions:0,premier:1,bundesliga:0,laliga:1,seriea:0,ligue1:0,eredivisie:0,sudamerica:1,seleccion:3,freekick:0,career:8,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Lothar Matthäus', stats:{champions:5,premier:0,bundesliga:121,laliga:0,seriea:40,ligue1:0,eredivisie:0,sudamerica:0,seleccion:11,freekick:0,career:226,worldcup:6,championsFinal:0,worldcupFinal:0}},
+{name:'Kylian Mbappé', stats:{champions:55,premier:0,bundesliga:0,laliga:31,seriea:0,ligue1:191,eredivisie:0,sudamerica:0,seleccion:50,freekick:0,career:376,worldcup:12,championsFinal:0,worldcupFinal:4}},
+{name:'Lionel Messi', stats:{champions:129,premier:0,bundesliga:0,laliga:474,seriea:0,ligue1:22,eredivisie:0,sudamerica:0,seleccion:112,freekick:0,career:867,worldcup:13,championsFinal:2,worldcupFinal:2}},
+{name:'Diego Milito', stats:{champions:9,premier:0,bundesliga:0,laliga:51,seriea:86,ligue1:0,eredivisie:0,sudamerica:58,seleccion:4,freekick:0,career:258,worldcup:0,championsFinal:2,worldcupFinal:0}},
+{name:'Luka Modrić', stats:{champions:9,premier:13,bundesliga:0,laliga:30,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:28,freekick:0,career:121,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Nacho Fernández', stats:{champions:2,premier:0,bundesliga:0,laliga:12,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:1,freekick:0,career:17,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Pavel Nedvěd', stats:{champions:15,premier:0,bundesliga:0,laliga:0,seriea:73,ligue1:0,eredivisie:0,sudamerica:0,seleccion:18,freekick:0,career:164,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Alessandro Nesta', stats:{champions:0,premier:0,bundesliga:0,laliga:0,seriea:8,ligue1:0,eredivisie:0,sudamerica:0,seleccion:0,freekick:0,career:13,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Neymar Jr.', stats:{champions:43,premier:0,bundesliga:0,laliga:68,seriea:0,ligue1:82,eredivisie:0,sudamerica:138,seleccion:79,freekick:0,career:441,worldcup:8,championsFinal:1,worldcupFinal:0}},
+{name:'Michael Owen', stats:{champions:11,premier:150,bundesliga:0,laliga:13,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:41,freekick:0,career:263,worldcup:4,championsFinal:0,worldcupFinal:0}},
+{name:'Mesut Özil', stats:{champions:11,premier:33,bundesliga:13,laliga:19,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:23,freekick:0,career:121,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Benjamin Pavard', stats:{champions:3,premier:0,bundesliga:9,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:5,freekick:0,career:20,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Pedro Rodríguez', stats:{champions:18,premier:29,bundesliga:0,laliga:58,seriea:29,ligue1:0,eredivisie:0,sudamerica:0,seleccion:17,freekick:0,career:200,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Pele', stats:{champions:0,premier:0,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:643,seleccion:77,freekick:0,career:767,worldcup:12,championsFinal:0,worldcupFinal:3}},
+{name:'Pepe', stats:{champions:5,premier:0,bundesliga:0,laliga:13,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:8,freekick:0,career:51,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Ivan Perišić', stats:{champions:8,premier:1,bundesliga:31,laliga:0,seriea:49,ligue1:0,eredivisie:9,sudamerica:0,seleccion:36,freekick:0,career:193,worldcup:6,championsFinal:0,worldcupFinal:1}},
+{name:'Emmanuel Petit', stats:{champions:0,premier:11,bundesliga:0,laliga:1,seriea:0,ligue1:4,eredivisie:0,sudamerica:0,seleccion:6,freekick:0,career:25,worldcup:2,championsFinal:0,worldcupFinal:1}},
+{name:'Gerard Piqué', stats:{champions:16,premier:0,bundesliga:0,laliga:32,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:5,freekick:0,career:63,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Andrea Pirlo', stats:{champions:8,premier:0,bundesliga:0,laliga:0,seriea:58,ligue1:0,eredivisie:0,sudamerica:0,seleccion:13,freekick:0,career:86,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Claudio Pizarro', stats:{champions:21,premier:2,bundesliga:197,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:17,freekick:0,career:297,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Michel Platini', stats:{champions:17,premier:0,bundesliga:0,laliga:0,seriea:68,ligue1:139,eredivisie:0,sudamerica:0,seleccion:41,freekick:0,career:295,worldcup:5,championsFinal:1,worldcupFinal:0}},
+{name:'Paul Pogba', stats:{champions:4,premier:29,bundesliga:0,laliga:0,seriea:28,ligue1:0,eredivisie:0,sudamerica:0,seleccion:11,freekick:0,career:85,worldcup:2,championsFinal:0,worldcupFinal:1}},
+{name:'Ferenc Puskás', stats:{champions:36,premier:0,bundesliga:0,laliga:156,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:84,freekick:0,career:709,worldcup:4,championsFinal:7,worldcupFinal:1}},
+{name:'Carles Puyol', stats:{champions:2,premier:0,bundesliga:0,laliga:13,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:3,freekick:0,career:22,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Rafael Márquez', stats:{champions:1,premier:0,bundesliga:0,laliga:9,seriea:0,ligue1:5,eredivisie:0,sudamerica:0,seleccion:18,freekick:0,career:39,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Ivan Rakitić', stats:{champions:10,premier:0,bundesliga:12,laliga:60,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:15,freekick:0,career:132,worldcup:1,championsFinal:1,worldcupFinal:0}},
+{name:'Sergio Ramos', stats:{champions:17,premier:0,bundesliga:0,laliga:77,seriea:0,ligue1:4,eredivisie:0,sudamerica:0,seleccion:23,freekick:0,career:145,worldcup:0,championsFinal:2,worldcupFinal:0}},
+{name:'Raúl González ', stats:{champions:71,premier:0,bundesliga:28,laliga:228,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:44,freekick:0,career:427,worldcup:5,championsFinal:2,worldcupFinal:0}},
+{name:'Marco Reus', stats:{champions:24,premier:0,bundesliga:156,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:15,freekick:0,career:235,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Franck Ribéry', stats:{champions:18,premier:0,bundesliga:86,laliga:0,seriea:5,ligue1:13,eredivisie:0,sudamerica:0,seleccion:16,freekick:0,career:167,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Frank Rijkaard', stats:{champions:7,premier:0,bundesliga:0,laliga:0,seriea:16,ligue1:0,eredivisie:58,sudamerica:0,seleccion:10,freekick:0,career:100,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Juan Román Riquelme  ', stats:{champions:3,premier:0,bundesliga:0,laliga:40,seriea:0,ligue1:0,eredivisie:0,sudamerica:78,seleccion:17,freekick:0,career:146,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Rivaldo', stats:{champions:27,premier:0,bundesliga:0,laliga:107,seriea:5,ligue1:0,eredivisie:0,sudamerica:16,seleccion:35,freekick:0,career:276,worldcup:8,championsFinal:0,worldcupFinal:0}},
+{name:'Arjen Robben', stats:{champions:31,premier:15,bundesliga:99,laliga:11,seriea:0,ligue1:0,eredivisie:25,sudamerica:0,seleccion:37,freekick:0,career:241,worldcup:6,championsFinal:1,worldcupFinal:0}},
+{name:'Roberto Carlos', stats:{champions:16,premier:0,bundesliga:0,laliga:47,seriea:5,ligue1:0,eredivisie:0,sudamerica:9,seleccion:10,freekick:0,career:110,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Robinho', stats:{champions:9,premier:14,bundesliga:0,laliga:25,seriea:25,ligue1:0,eredivisie:0,sudamerica:127,seleccion:28,freekick:0,career:259,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Rodri Hernández', stats:{champions:3,premier:22,bundesliga:0,laliga:4,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:4,freekick:0,career:35,worldcup:0,championsFinal:1,worldcupFinal:0}},
+{name:'Rodrygo Goes', stats:{champions:25,premier:0,bundesliga:0,laliga:32,seriea:0,ligue1:0,eredivisie:0,sudamerica:17,seleccion:7,freekick:0,career:92,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Romario', stats:{champions:12,premier:0,bundesliga:0,laliga:39,seriea:0,ligue1:0,eredivisie:98,sudamerica:531,seleccion:56,freekick:0,career:772,worldcup:5,championsFinal:0,worldcupFinal:0}},
+{name:'Ronaldinho', stats:{champions:18,premier:0,bundesliga:0,laliga:70,seriea:20,ligue1:17,eredivisie:0,sudamerica:57,seleccion:33,freekick:0,career:243,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Ronaldo Nazário', stats:{champions:14,premier:0,bundesliga:0,laliga:117,seriea:58,ligue1:0,eredivisie:42,sudamerica:57,seleccion:62,freekick:0,career:397,worldcup:15,championsFinal:0,worldcupFinal:2}},
+{name:'Wayne Rooney', stats:{champions:30,premier:208,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:52,freekick:0,career:365,worldcup:1,championsFinal:1,worldcupFinal:0}},
+{name:'Roy Keane', stats:{champions:14,premier:39,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:9,freekick:0,career:85,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Antonio Rüdiger', stats:{champions:4,premier:9,bundesliga:2,laliga:2,seriea:2,ligue1:0,eredivisie:0,sudamerica:0,seleccion:3,freekick:0,career:26,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Mohamed Salah', stats:{champions:47,premier:186,bundesliga:0,laliga:0,seriea:35,ligue1:0,eredivisie:0,sudamerica:0,seleccion:60,freekick:0,career:381,worldcup:2,championsFinal:1,worldcupFinal:0}},
+{name:'Paul Scholes', stats:{champions:24,premier:107,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:14,freekick:0,career:169,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Bastian Schweinsteiger', stats:{champions:12,premier:1,bundesliga:45,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:24,freekick:0,career:102,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Clarence Seedorf', stats:{champions:11,premier:0,bundesliga:0,laliga:15,seriea:58,ligue1:0,eredivisie:11,sudamerica:23,seleccion:11,freekick:0,career:145,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Alan Shearer', stats:{champions:7,premier:260,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:30,freekick:0,career:387,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Andriy Shevchenko', stats:{champions:48,premier:9,bundesliga:0,laliga:0,seriea:127,ligue1:0,eredivisie:0,sudamerica:0,seleccion:48,freekick:0,career:294,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Wesley Sneijder', stats:{champions:12,premier:0,bundesliga:0,laliga:11,seriea:13,ligue1:0,eredivisie:43,sudamerica:0,seleccion:31,freekick:0,career:185,worldcup:6,championsFinal:0,worldcupFinal:0}},
+{name:'Heung-min Son', stats:{champions:19,premier:127,bundesliga:41,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:51,freekick:0,career:273,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Luis Suárez', stats:{champions:27,premier:69,bundesliga:0,laliga:176,seriea:0,ligue1:0,eredivisie:91,sudamerica:49,seleccion:68,freekick:0,career:589,worldcup:7,championsFinal:1,worldcupFinal:0}},
+{name:'Carlos Tévez', stats:{champions:13,premier:84,bundesliga:0,laliga:0,seriea:39,ligue1:0,eredivisie:0,sudamerica:123,seleccion:13,freekick:0,career:305,worldcup:3,championsFinal:0,worldcupFinal:0}},
+{name:'Thiago Silva', stats:{champions:4,premier:8,bundesliga:0,laliga:0,seriea:5,ligue1:9,eredivisie:0,sudamerica:13,seleccion:7,freekick:0,career:52,worldcup:2,championsFinal:0,worldcupFinal:0}},
+{name:'Thomas Müller', stats:{champions:57,premier:0,bundesliga:150,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:45,freekick:0,career:295,worldcup:10,championsFinal:1,worldcupFinal:0}},
+{name:'Fernando Torres', stats:{champions:20,premier:85,bundesliga:0,laliga:102,seriea:1,ligue1:0,eredivisie:0,sudamerica:0,seleccion:38,freekick:0,career:301,worldcup:4,championsFinal:0,worldcupFinal:0}},
+{name:'Francesco Totti', stats:{champions:17,premier:0,bundesliga:0,laliga:0,seriea:250,ligue1:0,eredivisie:0,sudamerica:0,seleccion:9,freekick:0,career:316,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'David Trezeguet', stats:{champions:29,premier:0,bundesliga:0,laliga:12,seriea:123,ligue1:52,eredivisie:0,sudamerica:26,seleccion:34,freekick:0,career:307,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Kieran Trippier', stats:{champions:0,premier:6,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:1,freekick:0,career:15,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Federico Valverde', stats:{champions:3,premier:0,bundesliga:0,laliga:20,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:8,freekick:0,career:38,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Marco van Basten', stats:{champions:19,premier:0,bundesliga:0,laliga:0,seriea:90,ligue1:0,eredivisie:128,sudamerica:0,seleccion:24,freekick:0,career:288,worldcup:0,championsFinal:2,worldcupFinal:0}},
+{name:'Virgil van Dijk', stats:{champions:9,premier:25,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:5,sudamerica:0,seleccion:10,freekick:0,career:67,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Ruud van Nistelrooy', stats:{champions:56,premier:95,bundesliga:0,laliga:50,seriea:0,ligue1:0,eredivisie:75,sudamerica:0,seleccion:35,freekick:0,career:364,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Robin van Persie', stats:{champions:25,premier:144,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:35,sudamerica:0,seleccion:50,freekick:0,career:317,worldcup:6,championsFinal:0,worldcupFinal:0}},
+{name:'Raphaël Varane', stats:{champions:2,premier:2,bundesliga:0,laliga:8,seriea:0,ligue1:2,eredivisie:0,sudamerica:0,seleccion:5,freekick:0,career:26,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Jamie Vardy', stats:{champions:2,premier:145,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:7,freekick:0,career:244,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Carlos Vela', stats:{champions:3,premier:5,bundesliga:0,laliga:69,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:19,freekick:0,career:210,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Arturo Vidal', stats:{champions:15,premier:0,bundesliga:29,laliga:11,seriea:37,ligue1:0,eredivisie:0,sudamerica:15,seleccion:34,freekick:0,career:155,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Nemanja Vidić', stats:{champions:3,premier:15,bundesliga:0,laliga:0,seriea:1,ligue1:0,eredivisie:0,sudamerica:0,seleccion:1,freekick:0,career:31,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'David Villa', stats:{champions:14,premier:0,bundesliga:0,laliga:185,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:59,freekick:0,career:426,worldcup:9,championsFinal:1,worldcupFinal:0}},
+{name:'Vinícius Júnior', stats:{champions:29,premier:0,bundesliga:0,laliga:61,seriea:0,ligue1:0,eredivisie:0,sudamerica:14,seleccion:7,freekick:0,career:125,worldcup:1,championsFinal:2,worldcupFinal:0}},
+{name:'Kyle Walker', stats:{champions:1,premier:8,bundesliga:0,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:1,freekick:0,career:13,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Timo Werner', stats:{champions:17,premier:12,bundesliga:102,laliga:0,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:24,freekick:0,career:177,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Xabi Alonso', stats:{champions:6,premier:14,bundesliga:5,laliga:13,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:16,freekick:0,career:60,worldcup:2,championsFinal:1,worldcupFinal:0}},
+{name:'Xavi Hernández', stats:{champions:11,premier:0,bundesliga:0,laliga:58,seriea:0,ligue1:0,eredivisie:0,sudamerica:0,seleccion:12,freekick:0,career:122,worldcup:0,championsFinal:0,worldcupFinal:0}},
+{name:'Yaya Touré', stats:{champions:8,premier:60,bundesliga:0,laliga:4,seriea:0,ligue1:5,eredivisie:0,sudamerica:0,seleccion:20,freekick:0,career:119,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Gianluca Zambrotta', stats:{champions:0,premier:0,bundesliga:0,laliga:3,seriea:15,ligue1:0,eredivisie:0,sudamerica:0,seleccion:2,freekick:0,career:25,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Javier Zanetti', stats:{champions:2,premier:0,bundesliga:0,laliga:0,seriea:12,ligue1:0,eredivisie:0,sudamerica:4,seleccion:5,freekick:0,career:30,worldcup:1,championsFinal:0,worldcupFinal:0}},
+{name:'Zinédine Zidane', stats:{champions:14,premier:0,bundesliga:0,laliga:37,seriea:24,ligue1:34,eredivisie:0,sudamerica:0,seleccion:31,freekick:0,career:156,worldcup:5,championsFinal:1,worldcupFinal:3}},
+
+
+];
+
+let availablePlayers = [...players];
+
+const doubleProbNames = [
+  'Kylian Mbappe',
+  'Zinedine Zidane',
+  'Pele',
+  'Lionel Messi',
+  'Ronaldo Nazario',
+  'Ferenc Puskas',
+  'Gerd Muller',
+  'Mario Mandzukic',
+  'Antoine Griezmann',
+  'Emmanuel Petit',
+  'Cristiano Ronaldo',
+  'Eusebio',
+  'Gareth Bale',
+  'Raul Gonzalez',
+  'Hernan Crespo',
+  'Bobby Charlton',
+  'Samuel Etoo',
+  'Johan Cruyff',
+  'Filippo Inzaghi',
+  'Thomas Muller',
+  'David Villa',
+  'Neymar Jr',
+  'Luis Suarez',
+  'Arjen Robben',
+  'Karim Benzema',
+  'AlessandroDel Piero',
+  'Didier Drogba',
+  'Miroslav Klose',
+  'Jurgen Klinsmann',
+  'Gabriel Batistuta',
+  'Roberto Baggio',
+  'Diego Maradona',
+  'Rivaldo',
+  'Harry Kane',
+  'Wesley Sneijder',
+  'Lothar Matthaus',
+  'Diego Forlan',
+  'Thierry Henry',
+  'Romario',
+  'Garrincha',
+  'Edinson Cavani',
+  'Romelu Lukaku',
+  'Ronaldinho',
+  'Sergio Aguero',
+  'Robert Lewandowski',
+  'Andrea Pirlo',
+  'Edin Dzeko',
+  'Hugo Sanchez',
+  'Zlatan Ibrahimovic'
+];
+
+function normalizeName(name) {
+  return name.normalize('NFD')
+             .replace(/[\u0300-\u036f]/g, '')
+             .replace(/[\u2019\u2018]/g, "'");
+}
+
+const doubleProbSet = new Set(doubleProbNames.map(normalizeName));
+let currentPlayer = null;
+let score = 0;
+let gameStarted = false;
+
+const board = document.getElementById('board');
+const endOverlay = document.getElementById('end-overlay');
+const endTotal = document.getElementById('total-box');
+const endNote = document.getElementById('end-note');
+const currentPlayerDiv = document.getElementById('current-player');
+
+function drawBoard() {
+  categories.forEach((cat, index) => {
+    const cell = document.createElement('div');
+    cell.classList.add('cell');
+    cell.dataset.index = index;
+    cell.dataset.name = cat.name;
+    let flag = '';
+    if (categoryFlags[cat.key]) {
+      const cls = 'flag ' + cat.key + (noBorderFlags.has(cat.key) ? ' no-border' : '');
+      flag = '<img src="' + categoryFlags[cat.key] + '" class="' + cls + '" alt="">';
+    }
+    cell.innerHTML = flag + '<span class="label">' + cat.name + '</span><span class="result"></span>';
+    cell.addEventListener('click', () => placePlayer(cell, cat));
+    board.appendChild(cell);
+  });
+}
+
+function updateBoardText() {
+  document.querySelectorAll('.cell').forEach((cell, i) => {
+    if (!cell.classList.contains('used')) {
+      cell.dataset.name = categories[i].name;
+      cell.querySelector('.label').textContent = categories[i].name;
+      cell.querySelector('.result').textContent = '';
+    }
+  });
+}
+
+document.getElementById('draw-btn').addEventListener('click', () => {
+  animatePlayerSelection();
+});
+
+function animatePlayerSelection() {
+  if (!gameStarted || currentPlayer) return; // espera a comenzar o colocar
+  if (availablePlayers.length === 0) {
+    alert('No quedan jugadores');
+    return;
+  }
+
+  const nameHolder = currentPlayerDiv;
+  nameHolder.style.visibility = 'visible';
+  nameHolder.textContent = '';
+  let i = 0;
+  const cycle = setInterval(() => {
+    nameHolder.textContent = availablePlayers[i % availablePlayers.length].name;
+    i++;
+  }, 100);
+
+  setTimeout(() => {
+    clearInterval(cycle);
+
+    const weighted = [];
+    for (let j = 0; j < availablePlayers.length; j++) {
+      const p = availablePlayers[j];
+      const norm = normalizeName(p.name);
+      weighted.push(j);
+      if (doubleProbSet.has(norm)) weighted.push(j);
+    }
+    const idx = weighted[Math.floor(Math.random() * weighted.length)];
+    currentPlayer = availablePlayers.splice(idx, 1)[0];
+    nameHolder.textContent = currentPlayer.name;
+  }, 2000);
+}
+
+
+function placePlayer(cell, category) {
+  if (cell.classList.contains('used') || !currentPlayer) return;
+  const goals = currentPlayer.stats[category.key] || 0;
+  const gained = goals * category.multiplier;
+  score += gained;
+  cell.classList.add('used');
+  const label = cell.dataset.name;
+  let resultText = '';
+  if (category.multiplier > 1) {
+    resultText = currentPlayer.name + ' ' + goals + ' x ' + category.multiplier + ' = ' + gained;
+  } else {
+    resultText = currentPlayer.name + ' ' + gained + ' goles';
+  }
+  let flag = '';
+  if (categoryFlags[category.key]) {
+    const cls = 'flag ' + category.key + (noBorderFlags.has(category.key) ? ' no-border' : '');
+    flag = '<img src="' + categoryFlags[category.key] + '" class="' + cls + '" alt="">';
+  }
+  cell.innerHTML = flag + '<span class="label">' + label + '</span><span class="result">' + resultText + '</span>';
+  currentPlayer = null;
+  currentPlayerDiv.textContent = '';
+  currentPlayerDiv.style.visibility = 'hidden';
+
+  if (document.querySelectorAll('.cell.used').length === categories.length) {
+    endTotal.textContent = 'Total: ' + score + ' goles';
+    if (score > 7500) {
+      endTotal.style.background = 'green';
+      endNote.textContent = '\u00A1Objetivo superado!';
+    } else {
+      endTotal.style.background = 'red';
+      endNote.textContent = 'No alcanzaste 7500 goles';
+    }
+    endOverlay.style.display = 'flex';
+  }
+}
+
+drawBoard();
+document.getElementById('start-btn').addEventListener('click', startGame);
+</script>
+</body>
+</html>
