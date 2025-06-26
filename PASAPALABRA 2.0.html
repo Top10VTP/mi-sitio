@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pasapalabra Fútbol</title>
+  <link href="https://fonts.googleapis.com/css2?family=Contrail+One&family=Hammersmith+One&family=Bree+Serif&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #408D95;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      padding: 5px 20px;
+      background-color: white;
+      width: 100%;
+      border-bottom: 3px solid black;
+    }
+    .title-box {
+      grid-column: 2;
+      background-color: white;
+      color: black;
+      padding: 8px 20px;
+      border-radius: 10px;
+      font-size: 20px;
+      font-weight: bold;
+      font-family: 'Contrail One', sans-serif;
+      border: 3px solid black;
+      justify-self: center;
+    }
+    .logo {
+      grid-column: 3;
+      height: 60px;
+      width: auto;
+      justify-self: end;
+    }
+    .game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 30px;
+      width: 100%;
+      max-width: 450px;
+    }
+    #rosco {
+      position: relative;
+      width: 450px;
+      height: 450px;
+      margin-bottom: 20px;
+    }
+    .letter {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #545454;
+      border: 2px solid black;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Hammersmith One', sans-serif;
+      z-index: 0;
+    }
+    #question {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      font-family: 'Bree Serif', serif;
+      font-size: 20px;
+      color: white;
+      text-align: center;
+      margin: 0;
+      z-index: 1;
+    }
+    #answer {
+      width: 200px;
+      height: 30px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 2px solid black;
+      font-family: 'Hammersmith One', sans-serif;
+      padding: 5px;
+    }
+    #controls {
+      margin-top: 10px;
+    }
+    #controls button {
+      margin: 0 5px;
+      padding: 8px 15px;
+      font-family: 'Hammersmith One', sans-serif;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 2px solid black;
+      background-color: #009eae;
+      color: white;
+      cursor: pointer;
+    }
+    .rosco-button {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 16px;
+      font-family: 'Hammersmith One', sans-serif;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 2px solid black;
+      background-color: #009eae;
+      color: white;
+      cursor: pointer;
+    }
+    #start {
+      top: 65%;
+    }
+    #pass {
+      top: 75%;
+    }
+    .bottom-controls {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 450px;
+      margin-top: 10px;
+    }
+    .status-container {
+      position: absolute;
+      left: 0;
+      top: -10px;
+      width: 72px;
+      height: 72px;
+      color: white;
+      font-family: 'Hammersmith One', sans-serif;
+    }
+    .input-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
+    }
+    .timer-circle {
+      position: relative;
+      width: 72px;
+      height: 72px;
+    }
+    .timer-circle svg {
+      transform: rotate(-90deg);
+    }
+    .timer-circle circle {
+      fill: none;
+      stroke-width: 8;
+    }
+    .timer-circle .bg {
+      stroke: rgba(255,255,255,0.3);
+    }
+    .timer-circle .progress {
+      stroke: white;
+      stroke-linecap: round;
+      stroke-dasharray: 201;
+      stroke-dashoffset: 201;
+    }
+    .timer-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px;
+    }
+    .score-circle {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Hammersmith One', sans-serif;
+      font-size: 14px;
+      color: white;
+    }
+    .correct-circle {
+      background-color: #4CAF50;
+      left: calc(100% + 3px);
+      top: calc(50% - 15px);
+    }
+    .wrong-circle {
+      background-color: #e76667;
+      left: calc(50% - 15px);
+      top: calc(-30px - 3px);
+    }
+    footer {
+      background-color: #111;
+      color: white;
+      text-align: center;
+      padding: 20px 10px;
+      width: 100%;
+      margin-top: 40px;
+    }
+    .footer-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      max-width: 900px;
+      margin: auto;
+    }
+    .footer-section {
+      margin: 10px;
+    }
+    .footer-section h2 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .footer-section a {
+      display: block;
+      color: #f8b400;
+      text-decoration: none;
+      margin: 5px 0;
+    }
+    .footer-section a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 600px) {
+      #rosco {
+        width: 90vw;
+        height: 90vw;
+        max-width: 350px;
+        max-height: 350px;
+      }
+      .logo {
+        height: 50px;
+      }
+      .game-container,
+      .bottom-controls {
+        max-width: 90vw;
+      }
+      .status-container {
+        left: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title-box">PASAPALABRA VTP</div>
+    <img src="imagenes/logovtp.png" alt="Logo TOP 10 VTP" class="logo">
+  </div>
+  <div class="game-container">
+    <div id="rosco">
+      <div id="question">Pulsa Comenzar para jugar</div>
+      <button id="start" class="rosco-button">Comenzar</button>
+      <button id="pass" class="rosco-button" style="display:none">Pasapalabra</button>
+    </div>
+    <div class="bottom-controls">
+      <div class="status-container">
+        <div class="timer-circle">
+          <svg width="72" height="72" viewBox="0 0 72 72">
+            <circle class="bg" cx="36" cy="36" r="32"></circle>
+            <circle class="progress" cx="36" cy="36" r="32"></circle>
+          </svg>
+          <div id="timer" class="timer-text">03:00</div>
+        </div>
+        <div class="score-circle correct-circle">
+          <div id="correct-count">0</div>
+        </div>
+        <div class="score-circle wrong-circle">
+          <div id="wrong-count">0</div>
+        </div>
+      </div>
+      <div class="input-block">
+        <input id="answer" type="text" disabled>
+        <div id="controls">
+          <button id="submit" disabled>Responder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-container">
+      <div class="footer-section">
+        <h2>Redes Sociales</h2>
+        <a href="https://www.tiktok.com/@top10vtp" target="_blank">TikTok</a>
+        <a href="https://www.instagram.com/top10vtp" target="_blank">Instagram</a>
+      </div>
+      <div class="footer-section">
+        <h2>TOP 10 VTP</h2>
+        <a href="top-premierleague.html">Top 10 - Premier League</a>
+        <a href="top-laliga.html">Top 10 - LaLiga</a>
+        <a href="top-seriea.html">Top 10 - Serie A</a>
+        <a href="top-ligue1.html">Top 10 - Ligue 1</a>
+        <a href="top-bundesliga.html">Top 10 - Bundesliga</a>
+        <a href="top-championsleague.html">Top 10 - Champions League</a>
+      </div>
+      <div class="footer-section">
+        <h2>Contacto</h2>
+        <p><a href="mailto:top10vtp@gmail.com">top10vtp@gmail.com</a></p>
+        <a href="PoliticaPrivacidad.html">Política de Privacidad</a>
+      </div>
+    </div>
+  </footer>
+  <script>
+    const letters = [
+      { letter: 'A', answer: 'ARSENAL', question: "Con la A, equipo inglés apodado 'Gunners'.", status: 0 },
+      { letter: 'B', answer: 'BARCELONA', question: "Con la B, equipo español que juega en el Camp Nou.", status: 0 },
+      { letter: 'C', answer: 'CRISTIANO', question: "Con la C, nombre del goleador portugués Ronaldo.", status: 0 },
+      { letter: 'D', answer: 'DIEGO', question: "Con la D, nombre de Maradona.", status: 0 },
+      { letter: 'E', answer: 'ESPAÑA', question: "Con la E, selección campeona del mundo en 2010.", status: 0 },
+      { letter: 'F', answer: 'FERGUSON', question: "Con la F, apellido del legendario entrenador Sir Alex.", status: 0 },
+      { letter: 'G', answer: 'GUARDIOLA', question: "Con la G, apellido de Pep, entrenador del Manchester City.", status: 0 },
+      { letter: 'H', answer: 'HAZARD', question: "Con la H, apellido del jugador belga Eden.", status: 0 },
+      { letter: 'I', answer: 'INTER', question: "Con la I, equipo de Milán que viste de negro y azul.", status: 0 },
+      { letter: 'J', answer: 'JUVENTUS', question: "Con la J, equipo italiano apodado la 'Vecchia Signora'.", status: 0 },
+      { letter: 'K', answer: 'KROOS', question: "Con la K, apellido del mediocampista alemán Toni.", status: 0 },
+      { letter: 'L', answer: 'LIVERPOOL', question: "Con la L, equipo inglés cuyo estadio es Anfield.", status: 0 },
+      { letter: 'M', answer: 'MESSI', question: "Con la M, apellido del jugador argentino múltiple Balón de Oro.", status: 0 },
+      { letter: 'N', answer: 'NEYMAR', question: "Con la N, nombre del delantero brasileño fichado por el PSG en 2017.", status: 0 },
+      { letter: 'O', answer: 'OZIL', question: "Con la O, apellido del mediapunta alemán Mesut.", status: 0 },
+      { letter: 'P', answer: 'PSG', question: "Con la P, club parisino donde juega Mbappé.", status: 0 },
+      { letter: 'Q', answer: 'QATAR', question: "Con la Q, país anfitrión del Mundial 2022.", status: 0 },
+      { letter: 'R', answer: 'RONALDINHO', question: "Con la R, apodo del brasileño Gaucho campeón en 2002.", status: 0 },
+      { letter: 'S', answer: 'SUAREZ', question: "Con la S, apellido del goleador uruguayo Luis.", status: 0 },
+      { letter: 'T', answer: 'TOTTENHAM', question: "Con la T, equipo londinense apodado 'Spurs'.", status: 0 },
+      { letter: 'U', answer: 'URUGUAY', question: "Con la U, selección campeona del mundo en 1930 y 1950.", status: 0 },
+      { letter: 'V', answer: 'VILLA', question: "Con la V, apellido del máximo goleador histórico de la selección española.", status: 0 },
+      { letter: 'W', answer: 'WEMBLEY', question: "Con la W, estadio emblemático de la selección inglesa.", status: 0 },
+      { letter: 'X', answer: 'XAVI', question: "Con la X, nombre del exjugador y entrenador del Barcelona.", status: 0 },
+      { letter: 'Y', answer: 'YAYA', question: "Con la Y, nombre del marfileño Touré que jugó en Barcelona y City.", status: 0 },
+      { letter: 'Z', answer: 'ZIDANE', question: "Con la Z, apellido del francés que marcó en la final del Mundial 1998.", status: 0 }
+    ];
+    const rosco = document.getElementById('rosco');
+    const roscoSize = rosco.offsetWidth;
+    const center = roscoSize / 2; // centro del rosco
+    const circleRadius = center - 15; // radio del rosco
+    const questionEl = document.getElementById('question');
+    const answerEl = document.getElementById('answer');
+    const startBtn = document.getElementById('start');
+    const submitBtn = document.getElementById('submit');
+    const passBtn = document.getElementById('pass');
+    const timerEl = document.getElementById('timer');
+    const correctEl = document.getElementById('correct-count');
+    const wrongEl = document.getElementById('wrong-count');
+    const progressCircle = document.querySelector('.progress');
+    const totalTime = 180;
+    const radiusProgress = progressCircle.r.baseVal.value;
+    const circumference = 2 * Math.PI * radiusProgress;
+    progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+    progressCircle.style.strokeDashoffset = circumference;
+    let timerInterval;
+    let timeLeft = totalTime;
+    let current = 0;
+    let correct = 0;
+    let wrong = 0;
+
+    // Crear letras en círculo con la A en la parte superior
+    letters.forEach((l, i) => {
+      const angle = (2 * Math.PI / letters.length) * i - Math.PI / 2;
+      const x = center + circleRadius * Math.cos(angle) - 20;
+      const y = center + circleRadius * Math.sin(angle) - 20;
+      const div = document.createElement('div');
+      div.className = 'letter';
+      div.id = `letter-${l.letter}`;
+      div.style.left = `${x}px`;
+      div.style.top = `${y}px`;
+      div.textContent = l.letter;
+      rosco.appendChild(div);
+    });
+
+    function showQuestion() {
+      if (letters.every(l => l.status !== 0)) {
+        endGame();
+        return;
+      }
+      while (letters[current].status !== 0) {
+        current = (current + 1) % letters.length;
+      }
+      questionEl.textContent = letters[current].question;
+      answerEl.value = '';
+      answerEl.focus();
+    }
+
+    function updateTimer() {
+      const minutes = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+      const seconds = String(timeLeft % 60).padStart(2, '0');
+      timerEl.textContent = `${minutes}:${seconds}`;
+      const offset = circumference * (timeLeft / totalTime);
+      progressCircle.style.strokeDashoffset = offset;
+    }
+
+    function endGame() {
+      clearInterval(timerInterval);
+      questionEl.textContent = 'Fin del juego';
+      answerEl.disabled = true;
+      submitBtn.disabled = true;
+      passBtn.disabled = true;
+      startBtn.style.display = 'block';
+      passBtn.style.display = 'none';
+    }
+
+    function checkAnswer() {
+      const response = answerEl.value.trim().toUpperCase();
+      const item = letters[current];
+      const letterDiv = document.getElementById(`letter-${item.letter}`);
+      if (response === item.answer) {
+        item.status = 1;
+        letterDiv.style.backgroundColor = '#4CAF50';
+        correct++;
+      } else {
+        item.status = -1;
+        letterDiv.style.backgroundColor = '#e76667';
+        wrong++;
+      }
+      updateScore();
+      current = (current + 1) % letters.length;
+      showQuestion();
+    }
+
+    function passQuestion() {
+      current = (current + 1) % letters.length;
+      showQuestion();
+    }
+
+    function updateScore() {
+      correctEl.textContent = correct;
+      wrongEl.textContent = wrong;
+    }
+
+    startBtn.addEventListener('click', () => {
+      letters.forEach(l => { l.status = 0; });
+      document.querySelectorAll('.letter').forEach(div => {
+        div.style.backgroundColor = '#545454';
+      });
+      current = 0;
+      correct = 0;
+      wrong = 0;
+      updateScore();
+      timeLeft = totalTime;
+      updateTimer();
+      progressCircle.style.strokeDashoffset = circumference;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimer();
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+      answerEl.disabled = false;
+      submitBtn.disabled = false;
+      passBtn.disabled = false;
+      startBtn.style.display = 'none';
+      passBtn.style.display = 'block';
+      showQuestion();
+    });
+
+    submitBtn.addEventListener('click', checkAnswer);
+    passBtn.addEventListener('click', passQuestion);
+
+    answerEl.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        checkAnswer();
+      }
+    });
+  </script>
+</body>
+</html>
