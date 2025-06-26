@@ -16,38 +16,12 @@
       align-items: center;
       overflow-x: hidden;
     }
-    .header {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      padding: 5px 20px;
-      background-color: white;
-      width: 100%;
-      border-bottom: 3px solid black;
-    }
-    .title-box {
-      grid-column: 2;
-      background-color: white;
-      color: black;
-      padding: 8px 20px;
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: bold;
-      font-family: 'Contrail One', sans-serif;
-      border: 3px solid black;
-      justify-self: center;
-    }
-    .logo {
-      grid-column: 3;
-      height: 60px;
-      width: auto;
-      justify-self: end;
-    }
     .game-container {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-top: 30px;
+      /* increase top space so the rosco starts lower on the page */
+      margin: 100px 0 60px; /* top, horizontal, bottom */
       width: 100%;
       max-width: 450px;
     }
@@ -136,7 +110,7 @@
     }
     .status-container {
       position: absolute;
-      left: 0;
+      left: -20px;
       top: -10px;
       width: 72px;
       height: 72px;
@@ -230,6 +204,70 @@
     .footer-section a:hover {
       text-decoration: underline;
     }
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+    .overlay .box {
+      background: white;
+      padding: 20px;
+      border: 3px solid black;
+      border-radius: 10px;
+      width: 360px;
+      max-width: 90%;
+      min-height: 240px;
+      text-align: center;
+      font-family: 'Bree Serif', serif;
+      box-sizing: border-box;
+    }
+    .overlay .box button {
+      margin-top: 10px;
+      padding: 6px 12px;
+      font-family: 'Hammersmith One', sans-serif;
+      border: 2px solid black;
+      border-radius: 5px;
+      background-color: #009eae;
+      color: white;
+      cursor: pointer;
+    }
+    #summary-buttons {
+      margin-bottom: 10px;
+    }
+    #summary-buttons button {
+      margin: 0 4px;
+      padding: 6px 12px;
+      font-family: 'Hammersmith One', sans-serif;
+      border: 2px solid black;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .correct-btn { background-color: #4CAF50; }
+    .wrong-btn { background-color: #e76667; }
+    .unanswered-btn { background-color: #777; }
+    #summary .group { display: none; }
+    .correct-text { color: #4CAF50; }
+    .wrong-text { color: #e76667; }
+    .unanswered-text { color: #666; }
+    .group { margin-top: 10px; }
+    #summary-question { font-weight: bold; }
+    #summary-nav { margin-top: 10px; display: flex; justify-content: space-between; }
+    #summary-nav button {
+      background: none;
+      border: none;
+      font-family: 'Hammersmith One', sans-serif;
+      font-size: 24px;
+      cursor: pointer;
+      color: black;
+    }
     @media (max-width: 600px) {
       #rosco {
         width: 90vw;
@@ -237,24 +275,17 @@
         max-width: 350px;
         max-height: 350px;
       }
-      .logo {
-        height: 50px;
-      }
       .game-container,
       .bottom-controls {
         max-width: 90vw;
       }
       .status-container {
-        left: 0;
+        left: -20px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="header">
-    <div class="title-box">PASAPALABRA VTP</div>
-    <img src="imagenes/logovtp.png" alt="Logo TOP 10 VTP" class="logo">
-  </div>
   <div class="game-container">
     <div id="rosco">
       <div id="question">Pulsa Comenzar para jugar</div>
@@ -268,7 +299,7 @@
             <circle class="bg" cx="36" cy="36" r="32"></circle>
             <circle class="progress" cx="36" cy="36" r="32"></circle>
           </svg>
-          <div id="timer" class="timer-text">03:00</div>
+          <div id="timer" class="timer-text">04:00</div>
         </div>
         <div class="score-circle correct-circle">
           <div id="correct-count">0</div>
@@ -283,6 +314,32 @@
           <button id="submit" disabled>Responder</button>
         </div>
       </div>
+  </div>
+</div>
+  <div id="feedback" class="overlay" style="display:none;">
+    <div class="box">
+      <p id="feedback-question"></p>
+      <p id="feedback-answer"></p>
+      <button id="feedback-close">Continuar</button>
+    </div>
+  </div>
+  <div id="summary" class="overlay" style="display:none;">
+    <div class="box">
+      <h2>Resultados</h2>
+      <div id="summary-buttons">
+        <button class="correct-btn" data-target="correct">Aciertos</button>
+        <button class="wrong-btn" data-target="wrong">Fallos</button>
+        <button class="unanswered-btn" data-target="unanswered">Sin contestar</button>
+      </div>
+      <div id="summary-item" class="group">
+        <div id="summary-question"></div>
+        <div id="summary-answer"></div>
+        <div id="summary-nav">
+          <button id="summary-prev">&#9664;</button>
+          <button id="summary-next">&#9654;</button>
+        </div>
+      </div>
+      <button id="summary-close">Cerrar</button>
     </div>
   </div>
   <footer>
@@ -339,8 +396,8 @@
     ];
     const rosco = document.getElementById('rosco');
     const roscoSize = rosco.offsetWidth;
-    const center = roscoSize / 2; // centro del rosco
-    const circleRadius = center - 15; // radio del rosco
+    const center = roscoSize / 2;
+    const circleRadius = center - 15;
     const questionEl = document.getElementById('question');
     const answerEl = document.getElementById('answer');
     const startBtn = document.getElementById('start');
@@ -350,18 +407,42 @@
     const correctEl = document.getElementById('correct-count');
     const wrongEl = document.getElementById('wrong-count');
     const progressCircle = document.querySelector('.progress');
-    const totalTime = 180;
+    const feedbackOverlay = document.getElementById('feedback');
+    const feedbackQuestion = document.getElementById('feedback-question');
+    const feedbackAnswer = document.getElementById('feedback-answer');
+    const feedbackClose = document.getElementById('feedback-close');
+    const summaryOverlay = document.getElementById('summary');
+    const summaryClose = document.getElementById('summary-close');
+    const totalTime =240;
     const radiusProgress = progressCircle.r.baseVal.value;
     const circumference = 2 * Math.PI * radiusProgress;
     progressCircle.style.strokeDasharray = `${circumference} ${circumference}`;
     progressCircle.style.strokeDashoffset = circumference;
     let timerInterval;
     let timeLeft = totalTime;
+    let timerPaused = false;
     let current = 0;
     let correct = 0;
     let wrong = 0;
+    let afterFeedback = null;
 
-    // Crear letras en círculo con la A en la parte superior
+    function startTimer() {
+      timerPaused = false;
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimer();
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      timerPaused = true;
+      clearInterval(timerInterval);
+    }
+
     letters.forEach((l, i) => {
       const angle = (2 * Math.PI / letters.length) * i - Math.PI / 2;
       const x = center + circleRadius * Math.cos(angle) - 20;
@@ -404,6 +485,7 @@
       passBtn.disabled = true;
       startBtn.style.display = 'block';
       passBtn.style.display = 'none';
+      showSummary();
     }
 
     function checkAnswer() {
@@ -414,14 +496,17 @@
         item.status = 1;
         letterDiv.style.backgroundColor = '#4CAF50';
         correct++;
+        updateScore();
+        current = (current + 1) % letters.length;
+        showQuestion();
       } else {
         item.status = -1;
         letterDiv.style.backgroundColor = '#e76667';
         wrong++;
+        updateScore();
+        current = (current + 1) % letters.length;
+        showFeedback(item.question, item.answer, showQuestion);
       }
-      updateScore();
-      current = (current + 1) % letters.length;
-      showQuestion();
     }
 
     function passQuestion() {
@@ -434,7 +519,92 @@
       wrongEl.textContent = wrong;
     }
 
+    function showFeedback(question, answer, cb) {
+      feedbackQuestion.textContent = question;
+      feedbackAnswer.textContent = answer;
+      feedbackOverlay.style.display = 'flex';
+      pauseTimer();
+      answerEl.disabled = true;
+      submitBtn.disabled = true;
+      passBtn.disabled = true;
+      afterFeedback = cb;
+    }
+
+    feedbackClose.addEventListener('click', () => {
+      feedbackOverlay.style.display = 'none';
+      if (timeLeft > 0) startTimer();
+      answerEl.disabled = false;
+      submitBtn.disabled = false;
+      passBtn.disabled = false;
+      if (afterFeedback) {
+        afterFeedback();
+        afterFeedback = null;
+      }
+    });
+
+    const summaryQuestion = document.getElementById('summary-question');
+    const summaryAnswer = document.getElementById('summary-answer');
+    const prevBtn = document.getElementById('summary-prev');
+    const nextBtn = document.getElementById('summary-next');
+
+    const summaryData = { correct: [], wrong: [], unanswered: [] };
+    let currentList = [];
+    let currentType = 'correct';
+    let currentIndex = 0;
+
+    function updateItem() {
+      if (currentList.length === 0) {
+        summaryQuestion.textContent = 'Sin elementos';
+        summaryAnswer.textContent = '';
+        prevBtn.style.visibility = 'hidden';
+        nextBtn.style.visibility = 'hidden';
+        return;
+      }
+      const item = currentList[currentIndex];
+      summaryQuestion.textContent = item.question;
+      summaryAnswer.textContent = item.answer;
+      summaryAnswer.className = (currentType === 'correct' ? 'correct-text' : currentType === 'wrong' ? 'wrong-text' : 'unanswered-text');
+      prevBtn.style.visibility = currentIndex > 0 ? 'visible' : 'hidden';
+      nextBtn.style.visibility = currentIndex < currentList.length - 1 ? 'visible' : 'hidden';
+    }
+
+    function showSummary() {
+      summaryData.correct = letters.filter(l => l.status === 1).sort((a,b) => a.letter.localeCompare(b.letter));
+      summaryData.wrong = letters.filter(l => l.status === -1).sort((a,b) => a.letter.localeCompare(b.letter));
+      summaryData.unanswered = letters.filter(l => l.status === 0).sort((a,b) => a.letter.localeCompare(b.letter));
+      summaryOverlay.style.display = 'flex';
+      showGroup('correct');
+    }
+
+    function showGroup(name) {
+      currentType = name;
+      currentList = summaryData[name];
+      currentIndex = 0;
+      updateItem();
+      document.querySelector('#summary-item').style.display = 'block';
+    }
+
+    document.querySelectorAll('#summary-buttons button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        showGroup(btn.dataset.target);
+      });
+    });
+
+    prevBtn.addEventListener('click', () => {
+      if (currentIndex > 0) { currentIndex--; updateItem(); }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentIndex < currentList.length - 1) { currentIndex++; updateItem(); }
+    });
+
+    summaryClose.addEventListener('click', () => {
+      summaryOverlay.style.display = 'none';
+    });
+
     startBtn.addEventListener('click', () => {
+      summaryOverlay.style.display = 'none';
+      feedbackOverlay.style.display = 'none';
       letters.forEach(l => { l.status = 0; });
       document.querySelectorAll('.letter').forEach(div => {
         div.style.backgroundColor = '#545454';
@@ -446,14 +616,7 @@
       timeLeft = totalTime;
       updateTimer();
       progressCircle.style.strokeDashoffset = circumference;
-      clearInterval(timerInterval);
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimer();
-        if (timeLeft <= 0) {
-          endGame();
-        }
-      }, 1000);
+      startTimer();
       answerEl.disabled = false;
       submitBtn.disabled = false;
       passBtn.disabled = false;
